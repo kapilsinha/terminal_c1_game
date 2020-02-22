@@ -77,10 +77,12 @@ class AlgoStrategy(gamelib.AlgoCore):
         For offense we will use long range EMPs if they place stationary units near the enemy's front.
         If there are no stationary units to attack in the front, we will send Pings to try and score quickly.
         """
-        # First, place basic defenses
-        self.build_defences(game_state)
-        # Now build reactive defenses based on where the enemy scored
-        self.build_reactive_defense(game_state)
+        # TODO: Don't reset if gonna attack, otherwise reset?
+        self.passive_defense.reset_passive_defense_priority()
+        # 1. Update passive defense priorities based on game state
+        self.dynamic_update_defences(game_state)
+        # 2. Place passive defenses
+        self.passive_defense.deploy_units(game_state)
 
         # If the turn is less than 5, stall with Scramblers and wait to see enemy's base
         if game_state.turn_number < 5:
@@ -105,38 +107,52 @@ class AlgoStrategy(gamelib.AlgoCore):
                 encryptor_locations = [[13, 2], [14, 2], [13, 3], [14, 3]]
                 game_state.attempt_spawn(ENCRYPTOR, encryptor_locations)
 
-    def build_defences(self, game_state):
+    def dynamic_update_defences(self, game_state):
         """
-        Build basic defenses using hardcoded locations.
-        Remember to defend corners and avoid placing units in the front where enemy EMPs can attack them.
+        A) Update passive defense priorities to better cover 'weak' areas.
+        B) Also removes stationary units with low health (the thinking here is that
+           we remove it now and if it is high priority, it will be re-added next
+           round, so that opponents can't just easily penetrate low health firewalls)
+        A weak area means it is near one of the following:
+        1. A location where the opponent scored on us
+        2. A location where our firewall health is low
+        # TODO: Item 3 below. Not sure if it's worth?
+        3. A location that is likely (given an arbitrary opponent's starting location)
+           to be the first location that is attacked in the opponent's path
         """
-        self.passive_defense.deploy_units(game_state)
+        # 1. If the opponent scored on us, increase the priority in the area
+        # where they scored and do nothing else.
+        if len(self.scored_on_locations) > 0:
+            increase_priority_amount = 7 # arbitrary, requires testing
+            circle_radius = 3
+            locations = [tuple(loc) for loc in self.scored_on_locations]
+            most_scored_location = max(set(locations), key = locations.count)
+            self.passive_defense.increase_priority_near_location(
+                game_state.game_map, most_scored_location, circle_radius, increase_priority_amount
+            )
+            return
 
-        # Useful tool for setting up your base locations: https://www.kevinbai.design/terminal-map-maker
-        # More community tools available at: https://terminal.c1games.com/rules#Download
-
-        # Place destructors that attack enemy units
-        destructor_locations = [[0, 13], [27, 13], [8, 11], [19, 11], [13, 11], [14, 11]]
-        # attempt_spawn will try to spawn units if we have resources, and will check if a blocking unit is already there
-        game_state.attempt_spawn(DESTRUCTOR, destructor_locations)
-
-        # Place filters in front of destructors to soak up damage for them
-        filter_locations = [[8, 12], [19, 12]]
-        game_state.attempt_spawn(FILTER, filter_locations)
-        # upgrade filters so they soak more damage
-        game_state.attempt_upgrade(filter_locations)
-
-
-    def build_reactive_defense(self, game_state):
-        """
-        This function builds reactive defenses based on where the enemy scored on us from.
-        We can track where the opponent scored by looking at events in action frames
-        as shown in the on_action_frame function
-        """
-        for location in self.scored_on_locations:
-            # Build destructor one space above so that it doesn't block our own edge spawn locations
-            build_location = [location[0], location[1]+1]
-            game_state.attempt_spawn(DESTRUCTOR, build_location)
+        # 2. Remove firewalls that have less than THRESHOLD of their health remaining
+        # Also find the firewall that has the lowest health ratio (if it is < 1)
+        # and increase the priority in the area
+        stationary_unit_location_to_health_ratio = game_state.get_stationary_unit_location_to_health_ratio()
+        health_ratio_threshold = 1.0 / 3
+        for location, health_ratio in stationary_unit_location_to_health_ratio.items():
+            if health_ratio < health_ratio_threshold:
+                game_state.attempt_remove(location)
+        if len(stationary_unit_location_to_health_ratio) == 0:
+            min_health_location = None
+            min_health_ratio = 1
+        else:
+            min_health_location, min_health_ratio = min(
+                stationary_unit_location_to_health_ratio.items(), key=lambda x: x[1])
+        if min_health_ratio < 1:
+            # The unit is damaged
+            increase_priority_amount = 2 # arbitrary, requires testing
+            circle_radius = 2
+            self.passive_defense.increase_priority_near_location(
+                game_state.game_map, min_health_location, circle_radius, increase_priority_amount
+            )
 
     def stall_with_scramblers(self, game_state):
         """

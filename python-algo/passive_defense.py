@@ -26,28 +26,28 @@ class PassiveDefense(object):
 
         # Maps (location, firewall_unit_type, place/upgrade)
         left_side_base_passive_defense_to_priority = {
-            ((0, 13), FILTER, 'place'): 36,
-            ((1, 13), FILTER, 'place'): 35,
-            ((2, 13), FILTER, 'place'): 34,
-            ((3, 13), FILTER, 'place'): 33,
-            ((4, 12), FILTER, 'place'): 32,
-            ((5, 11), FILTER, 'place'): 31,
-            ((6, 10), FILTER, 'place'): 30,
-            ((6, 9), FILTER, 'place'): 29,
-            ((7, 8), FILTER, 'place'): 28,
-            ((8, 7), FILTER, 'place'): 27,
-            ((9, 7), FILTER, 'place'): 26,
-            ((10, 6), FILTER, 'place'): 25,
-            ((12, 5), DESTRUCTOR, 'place'): 24, # absolutely need to deploy this and above in round 1!
-            ((11, 5), FILTER, 'place'): 23,
-            ((12, 6), FILTER, 'place'): 22,
+            ((0, 13), FILTER, 'spawn'): 36,
+            ((1, 13), FILTER, 'spawn'): 35,
+            ((2, 13), FILTER, 'spawn'): 34,
+            ((3, 13), FILTER, 'spawn'): 33,
+            ((4, 12), FILTER, 'spawn'): 32,
+            ((5, 11), FILTER, 'spawn'): 31,
+            ((6, 10), FILTER, 'spawn'): 30,
+            ((6, 9), FILTER, 'spawn'): 29,
+            ((7, 8), FILTER, 'spawn'): 28,
+            ((8, 7), FILTER, 'spawn'): 27,
+            ((9, 7), FILTER, 'spawn'): 26,
+            ((10, 6), FILTER, 'spawn'): 25,
+            ((12, 5), DESTRUCTOR, 'spawn'): 24, # absolutely need to deploy this and above in round 1!
+            ((11, 5), FILTER, 'spawn'): 23,
+            ((12, 6), FILTER, 'spawn'): 22,
             ((12, 5), DESTRUCTOR, 'upgrade'): 21,
-            ((11, 6), DESTRUCTOR, 'place'): 20,
-            ((11, 7), FILTER, 'place'): 19,
-            ((6, 12), FILTER, 'place'): 18,
-            ((7, 11), FILTER, 'place'): 17,
-            ((6, 11), DESTRUCTOR, 'place'): 16,
-            ((3, 12), DESTRUCTOR, 'place'): 15,
+            ((11, 6), DESTRUCTOR, 'spawn'): 20,
+            ((11, 7), FILTER, 'spawn'): 19,
+            ((6, 12), FILTER, 'spawn'): 18,
+            ((7, 11), FILTER, 'spawn'): 17,
+            ((6, 11), DESTRUCTOR, 'spawn'): 16,
+            ((3, 12), DESTRUCTOR, 'spawn'): 15,
             ((3, 12), DESTRUCTOR, 'upgrade'): 14,
             ((6, 11), DESTRUCTOR, 'upgrade'): 13,
             ((0, 13), FILTER, 'upgrade'): 12,
@@ -55,9 +55,13 @@ class PassiveDefense(object):
             ((2, 13), FILTER, 'upgrade'): 10,
             ((3, 13), FILTER, 'upgrade'): 9,
             ((4, 12), FILTER, 'upgrade'): 8,
-            ((12, 4), ENCRYPTOR, 'place'): 7,
-            ((12, 3), ENCRYPTOR, 'place'): 6,
-            ((11, 4), ENCRYPTOR, 'place'): 5,
+            ((12, 4), ENCRYPTOR, 'spawn'): 7,
+            ((12, 3), ENCRYPTOR, 'spawn'): 6,
+            ((11, 4), ENCRYPTOR, 'spawn'): 5,
+            ((5, 13), FILTER, 'spawn'): 4,
+            ((5, 12), DESTRUCTOR, 'spawn'): 3,
+            ((5, 12), DESTRUCTOR, 'upgrade'): 2,
+            ((5, 13), FILTER, 'upgrade'): 1,
         }
         right_side_base_passive_defense_to_priority = {
             ((27 - x, y), firewall_type, action): priority \
@@ -79,11 +83,21 @@ class PassiveDefense(object):
         '''
         override_priority_map overrides corresponding entries in
         base_passive_defense_to_priority and adds extra entries
-        e.g. if override_priority_map = {(0, 13), ENCRYPTOR, 'place': 100, (0, 0), FILTER, 'place': 99}
+        e.g. if override_priority_map = {(0, 13), ENCRYPTOR, 'spawn': 100, (0, 0), FILTER, 'spawn': 99}
         then these dict entries would be placed in self.actual_passive_defense_to_priority
         '''
-        self.actual_passive_defense_to_priority = copy.copy(self.base_passive_defense_to_priority)
         self.actual_passive_defense_to_priority.update(override_priority_map)
+
+    def reset_passive_defense_priority(self):
+        self.actual_passive_defense_to_priority = copy.copy(self.base_passive_defense_to_priority)
+
+    def increase_priority_near_location(self, game_map, location, radius, increase_amount):
+        locations_in_circle = game_map.get_locations_in_range(location, radius)
+        tuple_locations_in_circle = set([tuple(location) for location in locations_in_circle])
+        for key, priority in self.actual_passive_defense_to_priority.items():
+            location, firewall_unit_type, action = key
+            if location in tuple_locations_in_circle:
+                self.actual_passive_defense_to_priority[key] = priority + increase_amount
 
     def deploy_units(self, game_state, num_cores_to_leave = 4):
         '''
@@ -97,10 +111,10 @@ class PassiveDefense(object):
         for location, firewall_unit_type, action in priority_sorted_passive_defense:
             if game_state.get_resource(CORES) - game_state.type_cost(firewall_unit_type)[CORES] < num_cores_to_leave:
                 break
-            if action == 'place':
+            if action == 'spawn':
                 num_units = game_state.attempt_spawn(firewall_unit_type, list(location))
             elif action == 'upgrade':
                 num_units = game_state.attempt_upgrade(list(location))
             else:
-                raise ValueError("Action must be 'place' or 'upgrade'")
+                raise ValueError("Action must be 'spawn' or 'upgrade'")
             # Could use num_units, which shows whether the spawn or upgrade happened but nah
