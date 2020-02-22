@@ -1,4 +1,4 @@
-# Starter Algo
+# Our Algo
 
 ## File Overview
 
@@ -92,30 +92,31 @@ This module contains the `GameUnit` class which holds information about a Unit.
 Helper functions and values that do not yet have a better place to live.
 
 ## Strategy Overview
-
-### Overall Strategy
-1. Update PASSIVE DEFENSE (“firewall" location, action) -> priority map (factor in what activeMove is & health of existing defenses). “action” is either placing a new unit or upgrading an existing unit (note that the priority of upgrading an extra unit must be strictly lower than the priority of creating that unit).
+1. Update PASSIVE DEFENSE ('firewall' location, action) -> priority map (factor in what `activeMove` is & health of existing defenses). 'action' is either placing a new unit or upgrading an existing unit (note that the priority of upgrading an extra unit must be strictly lower than the priority of creating that unit).
 2. (PASSIVE DEFENSE) Iterate down the priority list (nothing priority 0 should be done) and add the corresponding defenses (add filters or encryptor or destructor or upgrade stuff) if it hasn’t been done already until we have MIN_CORES (3-4?) left.
-3. Execute activeMove (ATTACK or ACTIVE DEFENSE)
+3. Execute `activeMove` (ATTACK or ACTIVE DEFENSE)
 4. Decide whether we will ATTACK (if so, where?) or ACTIVE_DEFENSE in next turn —> set activeMove
  - Maybe if num_bits_next_round - num_bits_this_round < THRESHOLD, attack. Otherwise, defend.
  - If attacking, attack on the side with the fewest destructors
  5. Delete the appropriate filters etc. based on value of activeMove (whether you will attack next move and if so, how) and based on health of existing filters and based on number of cores.
 
-**ACTIVE DEFENSE**
+### ACTIVE DEFENSE
 Commonality:
  - Deploy scramblers (only) but where?
  - Number of scramblers is some function of opponent’s number of bits in the next round
- - Maybe # scramblers = ceil[(opponent_bits // 3) // 2]
-A. *Basic Defense*
+ - Maybe # scramblers = ceil[(opponent_bits // 3) / 2]
+
+#### A) Basic Defense
 Deploy scramblers constantly in the same location (or do some dumb alternating thing)
-B. *More Advanced Defense*
+
+#### B) More Advanced Defense
 Somehow predict what the opponent will do for their attack (esp if they do the same thing in every round or if they have only a couple points where they can enter our side - iterate over all their start positions and see at what points they can enter our side) and calculate where to place all the scramblers to minimize (1) points lost and then (2) damage taken
 
-**ATTACK** (enum) - Need several strategies here
+## ATTACK (enum based on type of attack?) - Need several strategies here
  - Where to attack?
  - How to attack? Combine attacking units along with “firewall" units (especially filters to guide our attackers and destructors to destroy opponents’ scramblers)
  - Maybe group into where we are going to attack and then calculate how?
+<<<<<<< HEAD
 A. Attack through middle -> classic attack
 B. Attack through left -> barricade the middle and delete the filters on left
 C. Attack through right -> symmetrical to attack through left
@@ -124,3 +125,15 @@ D. Unique thing (similar to the “drive-by” thing in MadroxFactor vs Raptor)
 ## Misc Notes
 * Don't add print statements to the code! This causes errors. If necessary, use the debug_write function.
 * Don't push changes to the executables in the scripts repository
+=======
+
+#### A) Attack through middle -> classic attack
+
+#### B) Attack through left -> barricade the middle and delete the filters on left
+
+#### C) Attack through right -> symmetrical to attack through left
+
+#### D) Unique strategy
+ - Example: Setting up a line of filters so that EMPs can move along it and attack safely
+ - Similar to what happens in the MadroxFactor AI vs Raptor AI
+>>>>>>> 28c6bf6f593172c71397322c3efd2d52275af3f6
