@@ -120,3 +120,7 @@ A. Attack through middle -> classic attack
 B. Attack through left -> barricade the middle and delete the filters on left
 C. Attack through right -> symmetrical to attack through left
 D. Unique thing (similar to the “drive-by” thing in MadroxFactor vs Raptor)
+
+## Misc Notes
+* Don't add print statements to the code! This causes errors. If necessary, use the debug_write function.
+* Don't push changes to the executables in the scripts repository
