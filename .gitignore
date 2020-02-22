@@ -10,3 +10,6 @@ dist/*
 
 *.zip
 */.idea/*
+
+# I (Kapil) added the below to prevent unwanted changes
+scripts/*
