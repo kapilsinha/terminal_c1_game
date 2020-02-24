@@ -6,6 +6,8 @@ import warnings
 
 import gamelib
 from passive_defense import PassiveDefense
+from active_defense import ActiveDefense
+from attack import Attack
 
 """
 Most of the algo code you write will be in this file unless you create new
@@ -43,9 +45,13 @@ class AlgoStrategy(gamelib.AlgoCore):
         BITS = 1
         CORES = 0
         # This is a good place to do initial setup
+        self.previous_turn_scored_on_locations = []
         self.scored_on_locations = []
+        # Active move can be 'active_defense', 'attack_center', 'attack_left', 'attack_right'
+        self.active_move = 'active_defense'
         self.passive_defense = PassiveDefense(config)
-
+        self.active_defense = ActiveDefense(config)
+        self.attack = Attack(config)
 
 
     def on_turn(self, turn_state):
@@ -61,14 +67,8 @@ class AlgoStrategy(gamelib.AlgoCore):
         game_state.suppress_warnings(True)  #Comment or remove this line to enable warnings.
 
         self.starter_strategy(game_state)
-
         game_state.submit_turn()
 
-
-    """
-    NOTE: All the methods after this point are part of the sample starter-algo
-    strategy and can safely be replaced for your custom algo.
-    """
 
     def starter_strategy(self, game_state):
         """
@@ -77,35 +77,26 @@ class AlgoStrategy(gamelib.AlgoCore):
         For offense we will use long range EMPs if they place stationary units near the enemy's front.
         If there are no stationary units to attack in the front, we will send Pings to try and score quickly.
         """
-        # TODO: Don't reset if gonna attack, otherwise reset?
-        self.passive_defense.reset_passive_defense_priority()
         # 1. Update passive defense priorities based on game state
         self.dynamic_update_defences(game_state)
+        if self.active_move != 'active_defense':
+            # Do special update of defense priorities if we attack the center
+            self.attack.update_passive_defense(game_state, self.active_move, self.passive_defense)
+
         # 2. Place passive defenses
-        self.passive_defense.deploy_units(game_state)
+        # Arbitrarily save 4 cores if in active defense. Otherwise save 0
+        # (go all out in attack mode)
+        num_cores_to_leave = 4 if self.active_move == 'active_defense' else 0
+        self.passive_defense.deploy_units(game_state, num_cores_to_leave)
 
-        # If the turn is less than 5, stall with Scramblers and wait to see enemy's base
-        if game_state.turn_number < 5:
-            self.stall_with_scramblers(game_state)
+        # 3. Deploy active defense or attack units
+        if self.active_move == 'active_defense':
+            self.active_defense.deploy_units(game_state)
         else:
-            # Now let's analyze the enemy base to see where their defenses are concentrated.
-            # If they have many units in the front we can build a line for our EMPs to attack them at long range.
-            if self.detect_enemy_unit(game_state, unit_type=None, valid_x=None, valid_y=[14, 15]) > 10:
-                self.emp_line_strategy(game_state)
-            else:
-                # They don't have many units in the front so lets figure out their least defended area and send Pings there.
+            self.attack.deploy_units(game_state, self.active_move)
 
-                # Only spawn Ping's every other turn
-                # Sending more at once is better since attacks can only hit a single ping at a time
-                if game_state.turn_number % 2 == 1:
-                    # To simplify we will just check sending them from back left and right
-                    ping_spawn_location_options = [[13, 0], [14, 0]]
-                    best_location = self.least_damage_spawn_location(game_state, ping_spawn_location_options)
-                    game_state.attempt_spawn(PING, best_location, 1000)
-
-                # Lastly, if we have spare cores, let's build some Encryptors to boost our Pings' health.
-                encryptor_locations = [[13, 2], [14, 2], [13, 3], [14, 3]]
-                game_state.attempt_spawn(ENCRYPTOR, encryptor_locations)
+        # 4. Prep for next turn
+        self.prep_for_next_turn(game_state)
 
     def dynamic_update_defences(self, game_state):
         """
@@ -120,12 +111,13 @@ class AlgoStrategy(gamelib.AlgoCore):
         3. A location that is likely (given an arbitrary opponent's starting location)
            to be the first location that is attacked in the opponent's path
         """
-        # 1. If the opponent scored on us, increase the priority in the area
+        # 1. If the opponent just scored on us, increase the priority in the area
         # where they scored and do nothing else.
-        if len(self.scored_on_locations) > 0:
-            increase_priority_amount = 7 # arbitrary, requires testing
+        if len(self.previous_turn_scored_on_locations) > 0:
+            gamelib.debug_write("Fortifying the area where opponent just scored on us")
+            increase_priority_amount = 10 # arbitrary, requires testing
             circle_radius = 3
-            locations = [tuple(loc) for loc in self.scored_on_locations]
+            locations = [tuple(loc) for loc in self.previous_turn_scored_on_locations]
             most_scored_location = max(set(locations), key = locations.count)
             self.passive_defense.increase_priority_near_location(
                 game_state.game_map, most_scored_location, circle_radius, increase_priority_amount
@@ -136,10 +128,10 @@ class AlgoStrategy(gamelib.AlgoCore):
         # Also find the firewall that has the lowest health ratio (if it is < 1)
         # and increase the priority in the area
         stationary_unit_location_to_health_ratio = game_state.get_stationary_unit_location_to_health_ratio()
-        health_ratio_threshold = 0.4
+        health_ratio_threshold = 0.6
         for location, health_ratio in stationary_unit_location_to_health_ratio.items():
             if health_ratio < health_ratio_threshold:
-                gamelib.debug_write("Removed stationary unit at location {}; its health ratio was {}" \
+                gamelib.debug_write("Removed stationary unit at location {} due to low health; its health ratio was {}" \
                     .format(location, health_ratio))
                 game_state.attempt_remove(location)
         if len(stationary_unit_location_to_health_ratio) == 0:
@@ -150,8 +142,9 @@ class AlgoStrategy(gamelib.AlgoCore):
                 stationary_unit_location_to_health_ratio.items(), key=lambda x: x[1])
         if min_health_ratio < 1:
             # The unit is damaged
-            increase_priority_amount = 2 # arbitrary, requires testing
+            increase_priority_amount = 3 # arbitrary, requires testing
             circle_radius = 2
+            gamelib.debug_write(f"Fortifying the area around {min_health_location} due to low firewall health")
             self.passive_defense.increase_priority_near_location(
                 game_state.game_map, min_health_location, circle_radius, increase_priority_amount
             )
@@ -159,6 +152,7 @@ class AlgoStrategy(gamelib.AlgoCore):
     def stall_with_scramblers(self, game_state):
         """
         Send out Scramblers at random locations to defend our base from enemy moving units.
+        Unused (this was part of the starter code)
         """
         # We can spawn moving units on our edges so a list of all our edge locations
         friendly_edges = game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_LEFT) + game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_RIGHT)
@@ -182,6 +176,7 @@ class AlgoStrategy(gamelib.AlgoCore):
     def emp_line_strategy(self, game_state):
         """
         Build a line of the cheapest stationary unit so our EMP's can attack from long range.
+        Unused (this was part of the starter code)
         """
         # First let's figure out the cheapest unit
         # We could just check the game rules, but this demonstrates how to use the GameUnit class
@@ -200,25 +195,6 @@ class AlgoStrategy(gamelib.AlgoCore):
         # Now spawn EMPs next to the line
         # By asking attempt_spawn to spawn 1000 units, it will essentially spawn as many as we have resources for
         game_state.attempt_spawn(EMP, [24, 10], 1000)
-
-    def least_damage_spawn_location(self, game_state, location_options):
-        """
-        This function will help us guess which location is the safest to spawn moving units from.
-        It gets the path the unit will take then checks locations on that path to
-        estimate the path's damage risk.
-        """
-        damages = []
-        # Get the damage estimate each path will take
-        for location in location_options:
-            path = game_state.find_path_to_edge(location)
-            damage = 0
-            for path_location in path:
-                # Get number of enemy destructors that can attack the final location and multiply by destructor damage
-                damage += len(game_state.get_attackers(path_location, 0)) * gamelib.GameUnit(DESTRUCTOR, game_state.config).damage_i
-            damages.append(damage)
-
-        # Now just return the location that takes the least damage
-        return location_options[damages.index(min(damages))]
 
     def detect_enemy_unit(self, game_state, unit_type=None, valid_x = None, valid_y = None):
         total_units = 0
@@ -254,9 +230,36 @@ class AlgoStrategy(gamelib.AlgoCore):
             # 1 is integer for yourself, 2 is opponent (StarterKit code uses 0, 1 as player_index instead)
             if not unit_owner_self:
                 gamelib.debug_write("Got scored on at: {}".format(location))
+                self.previous_turn_scored_on_locations.append(location)
                 self.scored_on_locations.append(location)
                 gamelib.debug_write("All locations: {}".format(self.scored_on_locations))
 
+    def prep_for_next_turn(self, game_state):
+        '''
+        Choose active defense in next turn if num_bits will be 10 or fewer
+        Choose to attack in next turn if num_bits will be 17 or higher
+        Randomly choose active defense or attack (in weighted fashion) for 11-16 bits
+        ^ We can do the above by a single random number comparison
+
+        Set relevant variables based on whatever active move is chosen
+        '''
+        # TODO: Later also decide where to attack (left, center, right)
+        num_bits_in_next_round = game_state.project_future_bits()
+        if num_bits_in_next_round > random.randint(11, 16):
+            self.active_move = 'attack_center'
+        else:
+            self.active_move = 'active_defense'
+
+        # If we choose active defense, reset passive defense priorities.
+        # Otherwise don't because we may have deliberately adjusted priorities
+        # for the attack next move and don't want that to be reset
+        if self.active_move == 'active_defense':
+            self.passive_defense.reset_passive_defense_priority(game_state)
+
+        # Clear out previous turn details
+        self.previous_turn_scored_on_locations = []
+
+        # TODO: Delete filters if active_move is attack_left or attack_right
 
 if __name__ == "__main__":
     algo = AlgoStrategy()
