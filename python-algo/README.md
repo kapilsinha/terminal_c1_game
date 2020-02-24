@@ -116,16 +116,6 @@ Somehow predict what the opponent will do for their attack (esp if they do the s
  - Where to attack?
  - How to attack? Combine attacking units along with “firewall" units (especially filters to guide our attackers and destructors to destroy opponents’ scramblers)
  - Maybe group into where we are going to attack and then calculate how?
-<<<<<<< HEAD
-A. Attack through middle -> classic attack
-B. Attack through left -> barricade the middle and delete the filters on left
-C. Attack through right -> symmetrical to attack through left
-D. Unique thing (similar to the “drive-by” thing in MadroxFactor vs Raptor)
-
-## Misc Notes
-* Don't add print statements to the code! This causes errors. If necessary, use the debug_write function.
-* Don't push changes to the executables in the scripts repository
-=======
 
 #### A) Attack through middle -> classic attack
 
@@ -136,4 +126,7 @@ D. Unique thing (similar to the “drive-by” thing in MadroxFactor vs Raptor)
 #### D) Unique strategy
  - Example: Setting up a line of filters so that EMPs can move along it and attack safely
  - Similar to what happens in the MadroxFactor AI vs Raptor AI
->>>>>>> 28c6bf6f593172c71397322c3efd2d52275af3f6
+
+## Misc Notes
+* Don't add print statements to the code! This causes errors. If necessary, use the debug_write function.
+* Don't push changes to the executables in the scripts repository
