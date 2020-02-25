@@ -27,7 +27,9 @@ class CenterAttack(object):
 
     def update_passive_defense(self, game_state, passive_defense):
         '''
-        Tries to add a destructor on row 11 (the goal is to kill off some attackers
+        1. Adds the top left and right filters ([1, 13], [26, 13]) to the
+         priority map with absurdly high priority to make sure they get added
+        2. Tries to add a destructor on row 11 (the goal is to kill off some attackers
         esp. scramblers) and filters to protect it.
         Note that we deliberately do not just create them and instead add them to
         the priority map because we don't want to override more important defenses
@@ -36,6 +38,11 @@ class CenterAttack(object):
         since we don't track these extra added defenses but this is extremely
         unlikely so we ignore this.
         '''
+        # Increase priority of [1, 13], [26, 13] to ENSURE they are added back
+        side_filter_priority_overrides = {((1, 13), FILTER, 'spawn'): 1000,
+                                          ((26, 13), FILTER, 'spawn'): 1000}
+        passive_defense.set_passive_defense_priority_overrides(side_filter_priority_overrides)
+
         # Increase priority of destructor + supporting filters
         center_attack_start_location_options = [[13, 0], [14, 0]]
         best_location = self._least_damage_spawn_location(game_state, center_attack_start_location_options)

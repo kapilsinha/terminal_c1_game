@@ -3,6 +3,8 @@ import math
 import random
 
 from center_attack import CenterAttack
+from left_attack import LeftAttack
+from right_attack import RightAttack
 import gamelib
 
 
@@ -27,8 +29,28 @@ class Attack(object):
         CORES = 0
 
         self.center_attack = CenterAttack(config)
+        self.left_attack = LeftAttack(config)
+        self.right_attack = RightAttack(config)
+        # Must be 'left', 'right', or 'center' before calling deploy units
+        # i.e. you must compute attack type first
+        self.attack_type = None
 
-    def update_passive_defense(self, game_state, active_move, passive_defense):
+    def compute_attack_type(self, game_state):
+        # TODO: More complex logic involving paths here
+        opponent_destructor_locations = game_state.get_opponent_stationary_unit_type_to_locations()[DESTRUCTOR]
+        count_left_destructors = len([loc for loc in opponent_destructor_locations if loc[0] <= 4])
+        count_right_destructors = len([loc for loc in opponent_destructor_locations if loc[0] >= 23])
+
+        if min(count_left_destructors, count_right_destructors) >= 2:
+            self.attack_type = 'center'
+        elif count_left_destructors < count_right_destructors:
+            self.attack_type = 'left'
+        elif count_right_destructors < count_left_destructors:
+            self.attack_type = 'right'
+        else:
+            self.attack_type = random.choice(['left', 'right'])
+
+    def update_passive_defense(self, game_state, passive_defense):
         '''
         Increase priority of encryptors by 13 points.
         Then do attack_type-specific passive defense updates
@@ -38,19 +60,21 @@ class Attack(object):
             if firewall_unit_type == ENCRYPTOR:
                 passive_defense.actual_passive_defense_to_priority[x] = priority + 13
 
-        if active_move == 'attack_center':
-            self.center_attack.update_passive_defense(game_state, passive_defense)
-        else:
-            raise ValueError("Active move must be 'attack_center'")
+        self.get_attack().update_passive_defense(game_state, passive_defense)
 
-    def deploy_units(self, game_state, active_move):
+    def deploy_units(self, game_state):
         '''
         Deploy attack units
         '''
-        # TODO: We need to add attacks on the left and right side
-        # (note that this requires deleting a filter on the left or right side
-        # and barricading the center).
-        if active_move == 'attack_center':
-            self.center_attack.deploy_units(game_state)
-        else:
-            raise ValueError("Active move must be 'attack_center'")
+        self.get_attack().deploy_units(game_state)
+        # Not necessary, but makes sure compute_attack_type is called next time
+        self.attack_type = None
+
+    def get_attack(self):
+        if self.attack_type == 'center':
+            return self.center_attack
+        elif self.attack_type == 'left':
+            return self.left_attack
+        elif self.attack_type == 'right':
+            return self.right_attack
+        raise ValueError(f"Attack type must be 'center', 'left', or 'right'.  Found {self.attack_type}")

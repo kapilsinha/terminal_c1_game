@@ -79,21 +79,24 @@ class AlgoStrategy(gamelib.AlgoCore):
         """
         # 1. Update passive defense priorities based on game state
         self.dynamic_update_defences(game_state)
-        if self.active_move != 'active_defense':
-            # Do special update of defense priorities if we attack the center
-            self.attack.update_passive_defense(game_state, self.active_move, self.passive_defense)
+        if self.active_move == 'attack':
+            # Do special update of defense priorities
+            self.attack.compute_attack_type(game_state)
+            self.attack.update_passive_defense(game_state, self.passive_defense)
 
         # 2. Place passive defenses
-        # Arbitrarily save 4 cores if in active defense. Otherwise save 0
-        # (go all out in attack mode)
-        num_cores_to_leave = 4 if self.active_move == 'active_defense' else 0
+        # THERE MUST BE 4 cores if in attack (hard-coded necessity in blockade)
+        # but use all cores if in active defense
+        num_cores_to_leave = 4 if self.active_move == 'attack' else 0
         self.passive_defense.deploy_units(game_state, num_cores_to_leave)
 
         # 3. Deploy active defense or attack units
         if self.active_move == 'active_defense':
             self.active_defense.deploy_units(game_state)
+        elif self.active_move == 'attack':
+            self.attack.deploy_units(game_state)
         else:
-            self.attack.deploy_units(game_state, self.active_move)
+            raise ValueError("Active move must be attack or active defense")
 
         # 4. Prep for next turn
         self.prep_for_next_turn(game_state)
@@ -240,17 +243,17 @@ class AlgoStrategy(gamelib.AlgoCore):
 
     def prep_for_next_turn(self, game_state):
         '''
-        Choose active defense in next turn if num_bits will be 10 or fewer
-        Choose to attack in next turn if num_bits will be 17 or higher
-        Randomly choose active defense or attack (in weighted fashion) for 11-16 bits
+        Choose active defense if num_bits_in_next_round < 6 + num_bits_earned_per_round
+        Choose to attack in next turn if num_bits_in_next_round > 11 + num_bits_earned_per_round
+        Randomly choose active defense or attack (in weighted fashion) in between
         ^ We can do the above by a single random number comparison
 
         Set relevant variables based on whatever active move is chosen
         '''
-        # TODO: Later also decide where to attack (left, center, right)
         num_bits_in_next_round = game_state.project_future_bits()
-        if num_bits_in_next_round > random.randint(11, 16):
-            self.active_move = 'attack_center'
+        if num_bits_in_next_round > random.randint(
+            11 + game_state.turn_number // 10, 16 + game_state.turn_number // 10):
+            self.active_move = 'attack'
         else:
             self.active_move = 'active_defense'
 
@@ -259,11 +262,22 @@ class AlgoStrategy(gamelib.AlgoCore):
         # for the attack next move and don't want that to be reset
         if self.active_move == 'active_defense':
             self.passive_defense.reset_passive_defense_priority(game_state)
+        elif self.active_move == 'attack':
+            # Delete edge filters if active_move is attack
+            # (the filters may or may not be added back in the next round,
+            # depending on whether we attack on that side)
+            # Also temporarily change their priority to 0 so they don't get re-added
+            left_filter_location = [1, 13]
+            right_filter_location = [26, 13]
+            game_state.attempt_remove([left_filter_location, right_filter_location])
+            side_filter_priority_overrides = {(tuple(left_filter_location), FILTER, 'spawn'): 0,
+                                              (tuple(right_filter_location), FILTER, 'spawn'): 0}
+            self.passive_defense.set_passive_defense_priority_overrides(side_filter_priority_overrides)
+        else:
+            raise ValueError("active_move must be active_defense or attack")
 
         # Clear out previous turn details
         self.previous_turn_scored_on_locations = []
-
-        # TODO: Delete filters if active_move is attack_left or attack_right
 
 if __name__ == "__main__":
     algo = AlgoStrategy()

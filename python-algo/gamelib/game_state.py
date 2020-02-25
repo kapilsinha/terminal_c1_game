@@ -669,7 +669,7 @@ class GameState:
         where locations is a list of (x, y)
         """
         stationary_unit_type_to_locations = {FILTER: [], ENCRYPTOR: [], DESTRUCTOR: []}
-        for location in self.get_locations_for_opponent_side():
+        for x, y in self.get_locations_for_opponent_side():
             unit = self.contains_stationary_unit([x, y])
             if unit is not False:  # Contains a unit
                 stationary_unit_type_to_locations[unit.unit_type].append((x, y))
