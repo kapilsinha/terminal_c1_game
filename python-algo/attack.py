@@ -29,6 +29,15 @@ class Attack(object):
         self.center_attack = CenterAttack(config)
 
     def update_passive_defense(self, game_state, active_move, passive_defense):
+        '''
+        Increase priority of encryptors by 13 points.
+        Then do attack_type-specific passive defense updates
+        '''
+        for x, priority in passive_defense.actual_passive_defense_to_priority.items():
+            location, firewall_unit_type, action = x
+            if firewall_unit_type == ENCRYPTOR:
+                passive_defense.actual_passive_defense_to_priority[x] = priority + 13
+
         if active_move == 'attack_center':
             self.center_attack.update_passive_defense(game_state, passive_defense)
         else:

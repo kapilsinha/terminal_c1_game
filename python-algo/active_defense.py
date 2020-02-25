@@ -37,8 +37,8 @@ class ActiveDefense(object):
         Basic strategy: Just deploy all the scramblers alternating at (8, 5) and (19, 5)
         Locations are somewhat arbitrary but based on playing the game, seem good
         '''
-        left_deploy_location = [8, 5]
-        right_deploy_location = [19, 5]
+        left_deploy_location = [11, 2]
+        right_deploy_location = [16, 2]
         num_deployed_on_left_side = num_scramblers // 2
         num_deployed_on_right_side = num_scramblers - num_deployed_on_left_side
         game_state.attempt_spawn(SCRAMBLER, left_deploy_location, num=num_deployed_on_left_side)

@@ -223,6 +223,10 @@ class AlgoStrategy(gamelib.AlgoCore):
         state = json.loads(turn_string)
         events = state["events"]
         breaches = events["breach"]
+        #if len(events['spawn']) > 0: # use this to create the history
+            # I think it is (location, unit_type, _, player_number)?
+            #gamelib.debug_write(state["turnInfo"])
+            #gamelib.debug_write(events)
         for breach in breaches:
             location = breach[0]
             unit_owner_self = True if breach[4] == 1 else False

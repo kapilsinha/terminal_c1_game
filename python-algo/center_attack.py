@@ -27,8 +27,7 @@ class CenterAttack(object):
 
     def update_passive_defense(self, game_state, passive_defense):
         '''
-        1. Increases priority of encryptors by 10
-        2. Tries to add a destructor on row 11 (the goal is to kill off some attackers
+        Tries to add a destructor on row 11 (the goal is to kill off some attackers
         esp. scramblers) and filters to protect it.
         Note that we deliberately do not just create them and instead add them to
         the priority map because we don't want to override more important defenses
@@ -37,12 +36,6 @@ class CenterAttack(object):
         since we don't track these extra added defenses but this is extremely
         unlikely so we ignore this.
         '''
-        # Increase priority of encryptors by 10 points
-        for x, priority in passive_defense.actual_passive_defense_to_priority.items():
-            location, firewall_unit_type, action = x
-            if firewall_unit_type == ENCRYPTOR:
-                passive_defense.actual_passive_defense_to_priority[x] = priority + 10
-
         # Increase priority of destructor + supporting filters
         center_attack_start_location_options = [[13, 0], [14, 0]]
         best_location = self._least_damage_spawn_location(game_state, center_attack_start_location_options)
