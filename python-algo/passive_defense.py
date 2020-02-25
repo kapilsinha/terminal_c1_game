@@ -38,21 +38,21 @@ class PassiveDefense(object):
             ((8, 7), FILTER, 'spawn'): 39,
             ((9, 7), FILTER, 'spawn'): 38,
             ((10, 6), FILTER, 'spawn'): 37,
-            ((12, 5), DESTRUCTOR, 'spawn'): 36, # absolutely need to deploy this and above in round 1!
+            ((3, 12), DESTRUCTOR, 'spawn'): 36, # need to deploy this and above in round 1!
             ((11, 5), FILTER, 'spawn'): 35,
-            ((12, 6), FILTER, 'spawn'): 34,
-            ((6, 12), FILTER, 'spawn'): 33,
-            ((7, 11), FILTER, 'spawn'): 32,
-            ((6, 11), DESTRUCTOR, 'spawn'): 31,
-            ((11, 6), DESTRUCTOR, 'spawn'): 30,
-            ((11, 7), FILTER, 'spawn'): 29,
-            ((3, 12), DESTRUCTOR, 'spawn'): 28,
-            ((3, 12), DESTRUCTOR, 'upgrade'): 27,
-            ((8, 10), FILTER, 'spawn'): 26,
-            ((7, 10), DESTRUCTOR, 'spawn'): 25,
-            ((0, 13), FILTER, 'upgrade'): 24,
-            ((1, 13), FILTER, 'upgrade'): 23,
-            ((2, 13), FILTER, 'upgrade'): 22,
+            ((12, 5), DESTRUCTOR, 'spawn'): 34,
+            ((12, 6), FILTER, 'spawn'): 33,
+            ((0, 13), FILTER, 'upgrade'): 32, # important to upgrade to protect against ping self desruct
+            ((1, 13), FILTER, 'upgrade'): 31, # important to upgrade to protect against ping self destruct
+            ((2, 13), FILTER, 'upgrade'): 30, # important to upgrade to protect against ping self destruct
+            ((3, 12), DESTRUCTOR, 'upgrade'): 29, # I'm counting on them shielding their pings (if they do, a destructor can't one-shot kill em)
+            ((6, 12), FILTER, 'spawn'): 28,
+            ((7, 11), FILTER, 'spawn'): 27,
+            ((6, 11), DESTRUCTOR, 'spawn'): 26,
+            ((11, 6), DESTRUCTOR, 'spawn'): 25,
+            ((11, 7), FILTER, 'spawn'): 24,
+            ((8, 10), FILTER, 'spawn'): 23,
+            ((7, 10), DESTRUCTOR, 'spawn'): 22,
             ((3, 13), FILTER, 'upgrade'): 21,
             ((4, 12), FILTER, 'upgrade'): 20,
             ((12, 4), ENCRYPTOR, 'spawn'): 19,

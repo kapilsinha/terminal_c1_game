@@ -93,7 +93,15 @@ class AlgoStrategy(gamelib.AlgoCore):
 
         # 3. Deploy active defense or attack units
         if self.active_move == 'active_defense':
-            self.active_defense.deploy_units(game_state)
+            # Special handling of turn 1 to deploy all scramblers to protect the
+            # unguarded middle area. Deliberately chose these locations so that
+            # the scramblers remain clustered for more time (and can still take
+            # out pings in frame 24 or so if that's what the opponent sends)
+            if game_state.turn_number < 1:
+                game_state.attempt_spawn(SCRAMBLER, [6, 7], num=2)
+                game_state.attempt_spawn(SCRAMBLER, [21, 7], num=3)
+            else:
+                self.active_defense.deploy_units(game_state)
         elif self.active_move == 'attack':
             self.attack.deploy_units(game_state)
         else:
@@ -120,7 +128,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         if len(self.previous_turn_scored_on_locations) > 0:
             gamelib.debug_write("Fortifying the area where opponent just scored on us")
             increase_priority_amount = 10 # arbitrary, requires testing
-            circle_radius = 3
+            circle_radius = 4.5
             locations = [tuple(loc) for loc in self.previous_turn_scored_on_locations]
             most_scored_location = max(set(locations), key = locations.count)
             self.passive_defense.increase_priority_near_location(

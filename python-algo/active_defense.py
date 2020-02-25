@@ -26,11 +26,12 @@ class ActiveDefense(object):
         BITS = 1
         CORES = 0
 
-    def deploy_units(self, game_state):
+    def deploy_units(self, game_state, num_scramblers=None):
         '''
         Deploys scramblers in specific locations
         '''
-        num_scramblers = self.num_scramblers_to_deploy(game_state)
+        if num_scramblers is None:
+            num_scramblers = self.num_scramblers_to_deploy(game_state)
         self.basic_scrambler_deploy_strategy(game_state, num_scramblers)
 
     def basic_scrambler_deploy_strategy(self, game_state, num_scramblers):
