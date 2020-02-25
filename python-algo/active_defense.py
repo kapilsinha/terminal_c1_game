@@ -51,8 +51,8 @@ class ActiveDefense(object):
 
     def num_scramblers_to_deploy(self, game_state):
         '''
-        num_scramblers_to_deploy = ceil[(opponent_bits // 3) / 2] + 1
+        num_scramblers_to_deploy = ceil[(opponent_bits // 3) / 2]
         = ((opponent_bits // 3) + 1) // 2
         '''
         enemy_num_bits = int(game_state.get_resource(BITS, 1))
-        return ((enemy_num_bits // 3) + 1) // 2 + 1
+        return ((enemy_num_bits // 3) + 1) // 2
