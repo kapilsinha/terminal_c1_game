@@ -86,8 +86,9 @@ class AlgoStrategy(gamelib.AlgoCore):
 
         # 2. Place passive defenses
         # THERE MUST BE 4 cores if in attack (hard-coded necessity in blockade)
+        # Generally you need just 2 - and I've kept 4 for an encryptor
         # but use all cores if in active defense
-        num_cores_to_leave = 4 if self.active_move == 'attack' else 0
+        num_cores_to_leave = 6 if self.active_move == 'attack' else 0
         self.passive_defense.deploy_units(game_state, num_cores_to_leave)
 
         # 3. Deploy active defense or attack units

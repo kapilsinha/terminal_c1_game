@@ -58,7 +58,7 @@ class Attack(object):
         for x, priority in passive_defense.actual_passive_defense_to_priority.items():
             location, firewall_unit_type, action = x
             if firewall_unit_type == ENCRYPTOR:
-                passive_defense.actual_passive_defense_to_priority[x] = priority + 13
+                passive_defense.actual_passive_defense_to_priority[x] = priority + 17
 
         self.get_attack().update_passive_defense(game_state, passive_defense)
 
