@@ -54,30 +54,38 @@ class RightAttack(object):
 
     def ping_attack(self, game_state):
         '''
-        Ping attack is always trying to score points quickly so it always
-        starts at [13, 0]
+        Ping attack is always trying to score points quickly.
+        Deploy 6 pings on [9, 4] (to self destruct if need be) and the rest on [8, 5]
         We make sure to blockade center to guide the pings right
         '''
         self.blockade.blockade_center(game_state)
-        game_state.attempt_spawn(PING, [13, 0], int(game_state.get_resource(BITS)))
+        first_wave_size = 6
+        second_wave_size = int(game_state.get_resource(BITS)) - first_wave_size
+        game_state.attempt_spawn(PING, [9, 4], first_wave_size)
+        game_state.attempt_spawn(PING, [8, 5], second_wave_size)
 
     def emp_attack_for_damage(self, game_state):
         '''
-        Deploys EMPs on the right side but force them to go right purely to do
-        damage. Deploy at [17, 3] since [16, 3], [15, 4] are blockaded off
+        Deploys EMPs on the left side but force them to go left purely to do
+        damage. Deploy at [18, 4] since [16, 3], [15, 4] are blockaded off
+        (we could also deploy at [17, 3] but [18, 4] works out better since we protect
+        with scramblers)
+        Also send a few scramblers on [22, 8] (so they reach [26, 12] at the same time)
         '''
         self.blockade.blockade_right(game_state)
-        num_emps_to_deploy = int(game_state.get_resource(BITS)) // 3
-        game_state.attempt_spawn(EMP, [17, 3], num_emps_to_deploy)
+        num_scramblers_to_deploy = 3 + int(game_state.get_resource(BITS)) % 3
+        num_emps_to_deploy = (int(game_state.get_resource(BITS)) - num_scramblers_to_deploy) // 3
+        game_state.attempt_spawn(EMP, [18, 4], num_emps_to_deploy)
+        game_state.attempt_spawn(EMP, [22, 8], num_scramblers_to_deploy)
 
     def emp_attack_for_points(self, game_state):
         '''
-        Deploys EMPs on the left side to score points (and also do damage).
-        Can theoretically deploy at any point on the left side but we always choose [13, 0]
+        Deploys EMPs on the right side to score points (and also do damage).
+        Can theoretically deploy at any point on the right side but we always choose [14, 0]
         Also send a few scramblers on [20, 6] (so they reach [26, 13] at the same time)
         '''
         self.blockade.blockade_center(game_state)
-        num_emps_to_deploy = int(game_state.get_resource(BITS)) // 3
-        num_scramblers_to_deploy = int(game_state.get_resource(BITS)) % 3
+        num_scramblers_to_deploy = 3 + int(game_state.get_resource(BITS)) % 3
+        num_emps_to_deploy = (int(game_state.get_resource(BITS)) - num_scramblers_to_deploy) // 3
         game_state.attempt_spawn(EMP, [13, 0], num_emps_to_deploy)
         game_state.attempt_spawn(SCRAMBLER, [20, 6], num_scramblers_to_deploy)

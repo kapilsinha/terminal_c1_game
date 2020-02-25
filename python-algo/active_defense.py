@@ -1,5 +1,6 @@
 import copy
 import math
+import random
 
 import gamelib
 
@@ -41,16 +42,16 @@ class ActiveDefense(object):
         right_deploy_location = [16, 2]
         num_deployed_on_left_side = num_scramblers // 2
         num_deployed_on_right_side = num_scramblers - num_deployed_on_left_side
+        if random.random() < .5:
+            # Swap em randomly to keep things interestings
+            num_deployed_on_left_side, num_deployed_on_right_side = num_deployed_on_right_side, num_deployed_on_left_side
         game_state.attempt_spawn(SCRAMBLER, left_deploy_location, num=num_deployed_on_left_side)
         game_state.attempt_spawn(SCRAMBLER, right_deploy_location, num=num_deployed_on_right_side)
 
     def num_scramblers_to_deploy(self, game_state):
         '''
-        num_scramblers_to_deploy = ceil[(opponent_bits // 3) / 2]
+        num_scramblers_to_deploy = ceil[(opponent_bits // 3) / 2] + 1
         = ((opponent_bits // 3) + 1) // 2
-        Note that we always will use less than 5 bits so we shouldn't ever run
-        out of bits in active defense mode (after all, the purpose of active
-        defense is to not die while hoarding bits to prep for out next attack)
         '''
         enemy_num_bits = int(game_state.get_resource(BITS, 1))
-        return ((enemy_num_bits // 3) + 1) // 2
+        return ((enemy_num_bits // 3) + 1) // 2 + 1
