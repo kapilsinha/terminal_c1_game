@@ -28,50 +28,73 @@ class CenterAttack(object):
     def update_passive_defense(self, game_state, passive_defense):
         '''
         1. Adds the top left and right filters ([1, 13], [26, 13]) to the
-         priority map with absurdly high priority to make sure they get added
-        2. Tries to add a destructor on row 11 (the goal is to kill off some attackers
-        esp. scramblers) and filters to protect it.
+           priority map with absurdly high priority to make sure they get added
+        2. Tries to add a diagonal set of filters to guide our attack units
+           away from their natural path (intuition is that the opponent is
+           trying to guide us towards their defenses)
         Note that we deliberately do not just create them and instead add them to
         the priority map because we don't want to override more important defenses
-        We set its priority to just below the priority of the (6, 11) destructor.
-        Further note that in theory since we could be blockading ourselves
-        since we don't track these extra added defenses but this is extremely
-        unlikely so we ignore this.
+        We set its priority to just above the priority of the (6, 11) destructor.
         '''
         # Increase priority of [1, 13], [26, 13] to ENSURE they are added back
         side_filter_priority_overrides = {((1, 13), FILTER, 'spawn'): 1000,
                                           ((26, 13), FILTER, 'spawn'): 1000}
         passive_defense.set_passive_defense_priority_overrides(side_filter_priority_overrides)
 
-        # Increase priority of destructor + supporting filters
         center_attack_start_location_options = [[13, 0], [14, 0]]
         best_location = self._least_damage_spawn_location(game_state, center_attack_start_location_options)
         self.start_side = 'left' if best_location == [13, 0] else 'right'
 
-        # Spawn destructor on row 11 with protective filters (total cost is 9)
+        # Add diagonal set of 5 filters
         path = game_state.find_path_to_edge(best_location)
         if path is None:
             gamelib.debug_write("[attack.py] Attempted to find path to edge from a blocked position." \
             "[13, 0] and [14, 0] should never contain stationary units")
-        else:
-            destructor_location = next((location for location in path if location[1] == 11), None)
-            if destructor_location is None:
-                gamelib.debug_write("[attack.py] Path to edge did not hit row 11." \
-                "We should never block a path from hitting row 11")
-            else:
-                x, y = destructor_location
-                destructor_6_11_priority = passive_defense.actual_passive_defense_to_priority[((6, 11), DESTRUCTOR, 'spawn')]
-                priority_overrides = {((x, y + 1), FILTER, 'spawn'): destructor_6_11_priority - .1,
-                                      ((x, y), DESTRUCTOR, 'spawn'): destructor_6_11_priority - .2,
-                                      ((x - 1, y), FILTER, 'spawn'): destructor_6_11_priority - .3,
-                                      ((x + 1, y), FILTER, 'spawn'): destructor_6_11_priority - .3}
-                passive_defense.set_passive_defense_priority_overrides(priority_overrides)
+            return
+
+        path_location_at_row_13 = next((location for location in path if location[1] == 13), None)
+        if path_location_at_row_13 is None:
+            gamelib.debug_write("[attack.py] Path to edge never hit row 13." \
+            "We blockaded ourself in during center attack...should never happen")
+            return
+
+        if path_location_at_row_13 < 11:
+            destructor_6_11_priority = passive_defense.actual_passive_defense_to_priority[((6, 11), DESTRUCTOR, 'spawn')]
+            priority_overrides = {((7, 11), FILTER, 'spawn'): destructor_6_11_priority + .5,
+                                  ((8, 11), FILTER, 'spawn'): destructor_6_11_priority + .4,
+                                  ((9, 11), FILTER, 'spawn'): destructor_6_11_priority + .3,
+                                  ((10, 12), FILTER, 'spawn'): destructor_6_11_priority + .2,
+                                  ((11, 13), FILTER, 'spawn'): destructor_6_11_priority + .1}
+            passive_defense.set_passive_defense_priority_overrides(priority_overrides)
+        elif path_location_at_row_13 > 16:
+            priority_overrides = {((20, 11), FILTER, 'spawn'): destructor_6_11_priority + .5,
+                                  ((19, 11), FILTER, 'spawn'): destructor_6_11_priority + .4,
+                                  ((18, 11), FILTER, 'spawn'): destructor_6_11_priority + .3,
+                                  ((17, 12), FILTER, 'spawn'): destructor_6_11_priority + .2,
+                                  ((16, 13), FILTER, 'spawn'): destructor_6_11_priority + .1}
+            passive_defense.set_passive_defense_priority_overrides(priority_overrides)
 
     def deploy_units(self, game_state):
         '''
         Deploy attack units through the center.
         '''
-        if random.random() < .5:
+        if start_side == 'left':
+            start_location = [13, 0]
+        else:
+            start_location = [14, 0]
+
+        num_bits = int(game_state.get_resource(BITS))
+
+        # We assume it takes 2 hits to take out a ping (which is true iff the ping
+        # goes by an encryptor, which is generally the case). This is likely more
+        # telling than the damage calculation approach
+        estimated_num_hits_by_destructors = self.estimate_num_hits_by_destructors(game_state, start_location)
+
+        # This is a very rough estimate (assuming opponent hasn't deployed anything)
+        # but estimated_points_scored = num_pings - (estimated_num_hits_by_destructors // 2)
+        estimated_points_scored = num_bits - (estimated_num_hits_by_destructors // 2)
+
+        if estimated_points_scored > 5: # arbitrary threshold
             self.ping_attack(self.start_side, game_state)
         else:
             self.emp_attack(self.start_side, game_state)
@@ -118,6 +141,30 @@ class CenterAttack(object):
             else:
                 game_state.attempt_spawn(EMP, [24, 10], num_emps_to_deploy)
 
+    def estimate_damage_by_destructors(self, game_state, location):
+        path = game_state.find_path_to_edge(location)
+        if path is None:
+            gamelib.debug_write("[attack.py] Attempted to find path to edge from a blocked position." \
+            "[13, 0] and [14, 0] should never contain stationary units")
+            return -1 # we will assume this never happens. If so, we accept we're screwed
+        damage = 0
+        for path_location in path:
+            # Get number of enemy destructors that can attack the final location and multiply by destructor damage
+            damage += len(game_state.get_attackers(path_location, 0)) * gamelib.GameUnit(DESTRUCTOR, game_state.config).damage_i
+        return damage
+
+    def estimate_num_hits_by_destructors(self, game_state, location):
+        path = game_state.find_path_to_edge(location)
+        if path is None:
+            gamelib.debug_write("[attack.py] Attempted to find path to edge from a blocked position." \
+            "[13, 0] and [14, 0] should never contain stationary units")
+            return -1 # we will assume this never happens. If so, we accept we're screwed
+        num_hits = 0
+        for path_location in path:
+            # Get number of enemy destructors that can attack the final location
+            num_hits += len(game_state.get_attackers(path_location, 0))
+        return num_hits
+
     def _least_damage_spawn_location(self, game_state, location_options):
         """
         This function will help us guess which location is the safest to spawn moving units from.
@@ -127,16 +174,7 @@ class CenterAttack(object):
         damages = []
         # Get the damage estimate each path will take
         for location in location_options:
-            path = game_state.find_path_to_edge(location)
-            if path is None:
-                gamelib.debug_write("[attack.py] Attempted to find path to edge from a blocked position." \
-                "[13, 0] and [14, 0] should never contain stationary units")
-                damages.append(1000000) # ghetto way to keep going
-                continue
-            damage = 0
-            for path_location in path:
-                # Get number of enemy destructors that can attack the final location and multiply by destructor damage
-                damage += len(game_state.get_attackers(path_location, 0)) * gamelib.GameUnit(DESTRUCTOR, game_state.config).damage_i
+            damage = self.estimate_damage_by_destructors(game_state, location)
             damages.append(damage)
 
         # Now just return the location that takes the least damage
