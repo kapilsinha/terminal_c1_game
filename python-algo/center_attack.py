@@ -58,7 +58,9 @@ class CenterAttack(object):
             "We blockaded ourself in during center attack...should never happen")
             return
 
-        if path_location_at_row_13 < 11:
+        path_x_at_row_13 = path_location_at_row_13[0]
+
+        if path_x_at_row_13 < 11:
             destructor_6_11_priority = passive_defense.actual_passive_defense_to_priority[((6, 11), DESTRUCTOR, 'spawn')]
             priority_overrides = {((7, 11), FILTER, 'spawn'): destructor_6_11_priority + .5,
                                   ((8, 11), FILTER, 'spawn'): destructor_6_11_priority + .4,
@@ -66,7 +68,7 @@ class CenterAttack(object):
                                   ((10, 12), FILTER, 'spawn'): destructor_6_11_priority + .2,
                                   ((11, 13), FILTER, 'spawn'): destructor_6_11_priority + .1}
             passive_defense.set_passive_defense_priority_overrides(priority_overrides)
-        elif path_location_at_row_13 > 16:
+        elif path_x_at_row_13 > 16:
             priority_overrides = {((20, 11), FILTER, 'spawn'): destructor_6_11_priority + .5,
                                   ((19, 11), FILTER, 'spawn'): destructor_6_11_priority + .4,
                                   ((18, 11), FILTER, 'spawn'): destructor_6_11_priority + .3,
@@ -78,7 +80,7 @@ class CenterAttack(object):
         '''
         Deploy attack units through the center.
         '''
-        if start_side == 'left':
+        if self.start_side == 'left':
             start_location = [13, 0]
         else:
             start_location = [14, 0]
