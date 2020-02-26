@@ -117,14 +117,27 @@ class PassiveDefense(object):
         '''
         Places units one by one on the board from high to low priority.
         Does not place any unit with a priority of 0 or lower
-        Stops when we have num_cores_to_leave CORES remaining.
+        Stops when we have num_cores_to_leave CORES remaining UNLESS we need
+        to deploy our high priority filters. THEN WE VIOLATE THIS!
         '''
         priority_sorted_passive_defense = [defense for defense, priority \
             in sorted(self.actual_passive_defense_to_priority.items(), \
             key=lambda item: item[1], reverse=True) if priority > 0]
         for location, firewall_unit_type, action in priority_sorted_passive_defense:
             if game_state.get_resource(CORES) - game_state.type_cost(firewall_unit_type)[CORES] < num_cores_to_leave:
-                break
+                # Ok this is janky but we want to ensure that we have at least
+                # our basic filters set up. I have seen games where the opponent
+                # demolished our defense and though we had enough cores to
+                # build back our filters, we left it out because we limited ourselves.
+                # And that made a big difference in points (since it leaves a gap in our
+                # defense and the opponent units will target that now)
+                minimum_priority_to_fulfill = self.actual_passive_defense_to_priority[((10, 6), FILTER, 'spawn')]
+                cur_priority = self.actual_passive_defense_to_priority[(location, firewall_unit_type, action)]
+                if cur_priority < minimum_priority_to_fulfill:
+                    break
+                # Otherwise continue and violate our num_cores_to_leave!!
+                # Note that this can cause big issues esp. if we are attacking
+                # but those issues are likely worse if we don't patch our filters
             if action == 'spawn':
                 num_units = game_state.attempt_spawn(firewall_unit_type, list(location))
             elif action == 'upgrade':

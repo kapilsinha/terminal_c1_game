@@ -59,9 +59,9 @@ class CenterAttack(object):
             return
 
         path_x_at_row_13 = path_location_at_row_13[0]
+        destructor_6_11_priority = passive_defense.actual_passive_defense_to_priority[((6, 11), DESTRUCTOR, 'spawn')]
 
         if path_x_at_row_13 < 11:
-            destructor_6_11_priority = passive_defense.actual_passive_defense_to_priority[((6, 11), DESTRUCTOR, 'spawn')]
             priority_overrides = {((7, 11), FILTER, 'spawn'): destructor_6_11_priority + .5,
                                   ((8, 11), FILTER, 'spawn'): destructor_6_11_priority + .4,
                                   ((9, 11), FILTER, 'spawn'): destructor_6_11_priority + .3,
