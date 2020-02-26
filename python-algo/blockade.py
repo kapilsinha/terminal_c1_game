@@ -42,10 +42,24 @@ class Blockade(object):
         game_state.attempt_spawn(FILTER, blockade_locations)
         game_state.attempt_remove(blockade_locations)
 
+    def cheap_blockade_left(self, game_state):
+        # Cheaper blockade left - gives us less space to deploy units on the left
+        # but requires fewer filters.
+        # Be careful that the unit you want is being deployed left of this
+        game_state.attempt_spawn(FILTER, [9, 5])
+        game_state.attempt_remove([9, 5])
+
     def blockade_right(self, game_state):
         blockade_locations = self.right_locations
         game_state.attempt_spawn(FILTER, blockade_locations)
         game_state.attempt_remove(blockade_locations)
+
+    def cheap_blockade_right(self, game_state):
+        # Cheaper blockade right - gives us less space to deploy units on the right
+        # but requires fewer filters.
+        # Be careful that the unit you want is being deployed right of this
+        game_state.attempt_spawn(FILTER, [18, 5])
+        game_state.attempt_remove([18, 5])
 
     def blockade_center_and_left(self, game_state):
         blockade_locations = self.center_locations + self.left_locations

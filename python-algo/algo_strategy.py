@@ -86,6 +86,7 @@ class AlgoStrategy(gamelib.AlgoCore):
 
         # 2. Place passive defenses
         # THERE MUST BE 2 cores if in attack (hard-coded necessity in blockade)
+        # and there MUST BE 1 core if in active defense (to do side scrambler strategy)
         if self.active_move == 'attack':
             num_cores_to_leave = 2
         elif game_state.turn_number < 5:
