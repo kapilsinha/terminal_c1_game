@@ -46,11 +46,17 @@ class ActiveDefense(object):
         right_deploy_location = [16, 2]
         num_deployed_on_left_side = num_scramblers // 2
         num_deployed_on_right_side = num_scramblers - num_deployed_on_left_side
-        if random.random() < .5:
-            # Swap em randomly to keep things interestings
-            num_deployed_on_left_side, num_deployed_on_right_side = num_deployed_on_right_side, num_deployed_on_left_side
-        game_state.attempt_spawn(SCRAMBLER, left_deploy_location, num=num_deployed_on_left_side)
-        game_state.attempt_spawn(SCRAMBLER, right_deploy_location, num=num_deployed_on_right_side)
+
+        priorities = [[13,0], [14,0], [20,6], [13,0]]
+
+        for i in range(num_scramblers):
+            game_state.attempt_spawn(SCRAMBLER, priorities[i], num=num_scramblers)
+
+        # if random.random() < .5:
+        #     # Swap em randomly to keep things interestings
+        #     num_deployed_on_left_side, num_deployed_on_right_side = num_deployed_on_right_side, num_deployed_on_left_side
+        # game_state.attempt_spawn(SCRAMBLER, left_deploy_location, num=num_deployed_on_left_side)
+        # game_state.attempt_spawn(SCRAMBLER, right_deploy_location, num=num_deployed_on_right_side)
 
     def better_scrambler_deploy_strategy(self, game_state, num_scramblers):
         '''
@@ -75,15 +81,15 @@ class ActiveDefense(object):
         num_scramblers_to_deploy_on_side = num_scramblers // 2
         num_scramblers_to_deploy_on_center = num_scramblers - num_scramblers_to_deploy_on_side
 
-        num_scramblers_to_deploy_on_left = num_scramblers_to_deploy_on_side // 2
-        num_scramblers_to_deploy_on_right = num_scramblers_to_deploy_on_side - num_scramblers_to_deploy_on_left
-        if random.random() < .5:
-            num_scramblers_to_deploy_on_left, num_scramblers_to_deploy_on_right \
-                = num_scramblers_to_deploy_on_right, num_scramblers_to_deploy_on_left
+        num_scramblers_to_deploy_on_left = num_scramblers_to_deploy_on_side 
+        # num_scramblers_to_deploy_on_right = num_scramblers_to_deploy_on_side - num_scramblers_to_deploy_on_left
+        # if random.random() < .5:
+        #     num_scramblers_to_deploy_on_left, num_scramblers_to_deploy_on_right \
+        #         = num_scramblers_to_deploy_on_right, num_scramblers_to_deploy_on_left
 
         self.basic_scrambler_deploy_strategy(game_state, num_scramblers_to_deploy_on_center)
         self.deploy_scramblers_on_left_side(game_state, num_scramblers_to_deploy_on_left)
-        self.deploy_scramblers_on_right_side(game_state, num_scramblers_to_deploy_on_right)
+        # self.deploy_scramblers_on_right_side(game_state, num_scramblers_to_deploy_on_right)
 
     def deploy_scramblers_on_left_side(self, game_state, num_scramblers):
         '''

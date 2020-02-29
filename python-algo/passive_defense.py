@@ -61,8 +61,8 @@ class PassiveDefense(object):
             # the closer inner wall
             ((9, 5), FILTER, 'spawn'): 27,
 
-            ((2, 12), DESTRUCTOR, 'upgrade'): 26,
-            ((4, 12), DESTRUCTOR, 'upgrade'): 25
+            ((3, 12), DESTRUCTOR, 'upgrade'): 26,
+            ((12, 4), DESTRUCTOR, 'upgrade'): 25
         }
 
 
@@ -91,25 +91,34 @@ class PassiveDefense(object):
 
 
             ((24, 12), DESTRUCTOR, 'spawn'): 31,
-            ((26, 12), DESTRUCTOR, 'spawn'): 30.5
             ((15, 4), DESTRUCTOR, 'spawn'): 30,
             ((15, 5), FILTER, 'spawn'): 29,
 
+
+            ((24, 12), DESTRUCTOR, 'upgrade'): 28.5,
+
+    
             ((22, 11), FILTER, 'upgrade'): 28,
             ((21, 10), FILTER, 'upgrade'): 27,
             ((20, 9), FILTER, 'upgrade'): 26,
 
-            ((24, 12), DESTRUCTOR, 'upgrade'): 25,
-            ((26, 12), DESTRUCTOR, 'upgrade'): 24.5
+            
             ((15, 4), DESTRUCTOR, 'upgrade'): 24,
             
 
             ((23, 11), ENCRYPTOR, 'spawn'): 23,
+
+            ((12, 6), DESTRUCTOR, 'spawn'): 22.7,
+            ((15, 6), DESTRUCTOR, 'spawn'): 22.3,
+
             ((23, 11), ENCRYPTOR, 'upgrade'): 22,
             ((22, 10), ENCRYPTOR, 'spawn'): 21,
             ((22, 10), ENCRYPTOR, 'upgrade'): 20,
             ((21, 9), ENCRYPTOR, 'spawn'): 19,
-            ((21, 9), ENCRYPTOR, 'upgrade'): 18
+            ((21, 9), ENCRYPTOR, 'upgrade'): 18,
+
+            ((12, 6), DESTRUCTOR, 'upgrade'): 17,
+            ((15, 6), DESTRUCTOR, 'upgrade'): 16,
         }
 
         # right_side_base_passive_defense_to_priority = {
