@@ -31,49 +31,91 @@ class PassiveDefense(object):
             ((2, 13), FILTER, 'spawn'): 46,
             ((3, 13), FILTER, 'spawn'): 45,
             ((4, 12), FILTER, 'spawn'): 44,
-            ((5, 11), FILTER, 'spawn'): 43,
-            ((6, 10), FILTER, 'spawn'): 42,
-            ((6, 9), FILTER, 'spawn'): 41,
-            ((7, 8), FILTER, 'spawn'): 40,
-            ((8, 7), FILTER, 'spawn'): 39,
-            ((9, 7), FILTER, 'spawn'): 38,
-            ((10, 6), FILTER, 'spawn'): 37,
-            ((3, 12), DESTRUCTOR, 'spawn'): 36, # need to deploy this and above in round 1!
-            ((11, 5), FILTER, 'spawn'): 35,
-            ((12, 5), DESTRUCTOR, 'spawn'): 34,
-            ((12, 6), FILTER, 'spawn'): 33,
-            ((0, 13), FILTER, 'upgrade'): 32, # important to upgrade to protect against ping self desruct
-            ((1, 13), FILTER, 'upgrade'): 31, # important to upgrade to protect against ping self destruct
-            ((2, 13), FILTER, 'upgrade'): 30, # important to upgrade to protect against ping self destruct
-            ((3, 12), DESTRUCTOR, 'upgrade'): 29, # I'm counting on them shielding their pings (if they do, a destructor can't one-shot kill em)
-            ((6, 12), FILTER, 'spawn'): 28,
-            ((7, 11), FILTER, 'spawn'): 27,
-            ((6, 11), DESTRUCTOR, 'spawn'): 26,
-            ((11, 6), DESTRUCTOR, 'spawn'): 25,
-            ((11, 7), FILTER, 'spawn'): 24,
-            ((8, 10), FILTER, 'spawn'): 23,
-            ((7, 10), DESTRUCTOR, 'spawn'): 22,
-            ((3, 13), FILTER, 'upgrade'): 21,
-            ((4, 12), FILTER, 'upgrade'): 20,
-            ((12, 4), ENCRYPTOR, 'spawn'): 19,
-            ((12, 3), ENCRYPTOR, 'spawn'): 18,
-            ((11, 4), ENCRYPTOR, 'spawn'): 17,
-            ((5, 13), FILTER, 'spawn'): 16,
-            ((5, 12), DESTRUCTOR, 'spawn'): 15,
-            ((5, 13), FILTER, 'upgrade'): 14,
-            # upgrades are low priority (because they double damage but not health)
-            # Note that it is important to put it in this list in case their priority
-            # gets increased
-            ((12, 5), DESTRUCTOR, 'upgrade'): 13,
-            ((6, 11), DESTRUCTOR, 'upgrade'): 12,
-            ((7, 10), DESTRUCTOR, 'upgrade'): 11,
-            ((5, 12), DESTRUCTOR, 'upgrade'): 10,
+
+            ((0, 13), FILTER, 'upgrade'): 43,
+            ((1, 13), FILTER, 'upgrade'): 42,
+            ((2, 13), FILTER, 'upgrade'): 41,
+            ((3, 13), FILTER, 'upgrade'): 40,
+            ((4, 12), FILTER, 'upgrade'): 39,
+
+
+
+            ((5, 11), FILTER, 'spawn'): 38,
+            ((6, 10), FILTER, 'spawn'): 37,
+            ((7, 9), FILTER, 'spawn'): 36,
+            ((8, 8), FILTER, 'spawn'): 35,
+            ((9, 7), FILTER, 'spawn'): 34,
+            ((10, 6), FILTER, 'spawn'): 33,
+            ((11, 5), FILTER, 'spawn'): 32,
+
+
+            ((3, 12), DESTRUCTOR, 'spawn'): 31,
+            ((12, 4), DESTRUCTOR, 'spawn'): 30,
+            ((12, 5), FILTER, 'spawn'): 29,
+
+
+            # makes up an inner wall with the destructors
+            ((2, 11), FILTER, 'spawn'): 28,
+        
+            # the closer inner wall
+            ((11, 4), FILTER, 'spawn'): 27,
+            ((10, 3), FILTER, 'spawn'): 26,
+
+            ((2, 12), DESTRUCTOR, 'upgrade'): 25,
+            ((4, 12), DESTRUCTOR, 'upgrade'): 24
         }
+
+
         right_side_base_passive_defense_to_priority = {
-            ((27 - x, y), firewall_type, action): priority \
-            for (((x, y), firewall_type, action), priority) \
-            in left_side_base_passive_defense_to_priority.items()
+            ((27, 13), FILTER, 'spawn'): 48,
+            ((26, 13), FILTER, 'spawn'): 47,
+            ((25, 13), FILTER, 'spawn'): 46,
+            ((24, 13), FILTER, 'spawn'): 45,
+            ((23, 12), FILTER, 'spawn'): 44,
+
+            ((27, 13), FILTER, 'upgrade'): 43,
+            ((26, 13), FILTER, 'upgrade'): 42,
+            ((25, 13), FILTER, 'upgrade'): 41,
+            ((24, 13), FILTER, 'upgrade'): 40,
+            ((23, 12), FILTER, 'upgrade'): 39,
+
+
+
+            ((22, 11), FILTER, 'spawn'): 38,
+            ((21, 10), FILTER, 'spawn'): 37,
+            ((20, 9), FILTER, 'spawn'): 36,
+            ((19, 8), FILTER, 'spawn'): 35,
+            ((18, 7), FILTER, 'spawn'): 34,
+            ((17, 6), FILTER, 'spawn'): 33,
+            ((16, 5), FILTER, 'spawn'): 32,
+
+
+            ((24, 12), DESTRUCTOR, 'spawn'): 31,
+            ((15, 4), DESTRUCTOR, 'spawn'): 30,
+            ((15, 5), FILTER, 'spawn'): 29,
+
+            ((22, 11), FILTER, 'upgrade'): 28,
+            ((21, 10), FILTER, 'upgrade'): 27,
+            ((20, 9), FILTER, 'upgrade'): 26,
+
+            ((2, 12), DESTRUCTOR, 'upgrade'): 25,
+            ((4, 12), DESTRUCTOR, 'upgrade'): 24,
+
+            ((24, 10), ENCRYPTOR, 'spawn'): 23,
+            ((24, 10), ENCRYPTOR, 'upgrade'): 22,
+            ((23, 9), ENCRYPTOR, 'spawn'): 21,
+            ((23, 9), ENCRYPTOR, 'upgrade'): 20,
+            ((22, 8), ENCRYPTOR, 'spawn'): 19,
+            ((22, 8), ENCRYPTOR, 'upgrade'): 18
         }
+
+        # right_side_base_passive_defense_to_priority = {
+        #     ((27 - x, y), firewall_type, action): priority \
+        #     for (((x, y), firewall_type, action), priority) \
+        #     in left_side_base_passive_defense_to_priority.items()
+        # }
+
+
 
         # This is the constant, base priority map. NEVER CHANGE IT!
         # It will be slightly modified when placing firewall units
