@@ -91,6 +91,7 @@ class PassiveDefense(object):
 
 
             ((24, 12), DESTRUCTOR, 'spawn'): 31,
+            ((26, 12), DESTRUCTOR, 'spawn'): 30.5
             ((15, 4), DESTRUCTOR, 'spawn'): 30,
             ((15, 5), FILTER, 'spawn'): 29,
 
@@ -98,15 +99,17 @@ class PassiveDefense(object):
             ((21, 10), FILTER, 'upgrade'): 27,
             ((20, 9), FILTER, 'upgrade'): 26,
 
-            ((2, 12), DESTRUCTOR, 'upgrade'): 25,
-            ((4, 12), DESTRUCTOR, 'upgrade'): 24,
+            ((24, 12), DESTRUCTOR, 'upgrade'): 25,
+            ((26, 12), DESTRUCTOR, 'upgrade'): 24.5
+            ((15, 4), DESTRUCTOR, 'upgrade'): 24,
+            
 
-            ((24, 10), ENCRYPTOR, 'spawn'): 23,
-            ((24, 10), ENCRYPTOR, 'upgrade'): 22,
-            ((23, 9), ENCRYPTOR, 'spawn'): 21,
-            ((23, 9), ENCRYPTOR, 'upgrade'): 20,
-            ((22, 8), ENCRYPTOR, 'spawn'): 19,
-            ((22, 8), ENCRYPTOR, 'upgrade'): 18
+            ((23, 11), ENCRYPTOR, 'spawn'): 23,
+            ((23, 11), ENCRYPTOR, 'upgrade'): 22,
+            ((22, 10), ENCRYPTOR, 'spawn'): 21,
+            ((22, 10), ENCRYPTOR, 'upgrade'): 20,
+            ((21, 9), ENCRYPTOR, 'spawn'): 19,
+            ((21, 9), ENCRYPTOR, 'upgrade'): 18
         }
 
         # right_side_base_passive_defense_to_priority = {
