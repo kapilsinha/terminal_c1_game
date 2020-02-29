@@ -108,19 +108,25 @@ class ActiveDefense(object):
             # Good check to make sure we don't unnecessarily blockade if we don't
             # need to deploy scramblers on this side
             return
-        self.blockade.cheap_blockade_left(game_state)
-        game_state.attempt_spawn(SCRAMBLER, [5, 8], num=num_scramblers)
 
-    def deploy_scramblers_on_right_side(self, game_state, num_scramblers):
-        '''
-        See the comment for deploy_scrambler_on_left_side
-        '''
-        if num_scramblers == 0:
-            # Good check to make sure we don't unnecessarily blockade if we don't
-            # need to deploy scramblers on this side
-            return
-        self.blockade.cheap_blockade_right(game_state)
-        game_state.attempt_spawn(SCRAMBLER, [22, 8], num=num_scramblers)
+        priorities = [[5,8], [7,6], [6,7]]
+        self.blockade.cheap_blockade_left(game_state)
+
+    
+
+        for i in range(num_scramblers):
+            game_state.attempt_spawn(SCRAMBLER, priorities[i], num=num_scramblers)
+
+    # def deploy_scramblers_on_right_side(self, game_state, num_scramblers):
+    #     '''
+    #     See the comment for deploy_scrambler_on_left_side
+    #     '''
+    #     if num_scramblers == 0:
+    #         # Good check to make sure we don't unnecessarily blockade if we don't
+    #         # need to deploy scramblers on this side
+    #         return
+    #     self.blockade.cheap_blockade_right(game_state)
+    #     game_state.attempt_spawn(SCRAMBLER, [22, 8], num=num_scramblers)
 
     def num_scramblers_to_deploy(self, game_state):
         '''
