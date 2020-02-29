@@ -27,14 +27,11 @@ class RightAttack(object):
 
         self.blockade = Blockade(config)
 
-    def update_passive_defense(self, game_state, passive_defense):
-        '''
-        Adds the top left filter [1, 13] to the priority map with absurdly
-        high priority to make sure it gets added
-        '''
-        # Increase priority of [1, 13] to ENSURE it is added back
-        side_filter_priority_overrides = {((1, 13), FILTER, 'spawn'): 1000}
-        passive_defense.set_passive_defense_priority_overrides(side_filter_priority_overrides)
+    def delete_filters(self, game_state, passive_defense):
+        loc = [26, 13]
+        game_state.attempt_remove(loc)
+        priority_override = {(tuple(loc), FILTER, 'spawn'): 0}
+        passive_defense.set_passive_defense_priority_overrides(priority_override)
 
     def deploy_units(self, game_state):
         '''

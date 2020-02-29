@@ -78,11 +78,9 @@ class AlgoStrategy(gamelib.AlgoCore):
         If there are no stationary units to attack in the front, we will send Pings to try and score quickly.
         """
         # 1. Update passive defense priorities based on game state
+        # Note we do special handling of attack stuff because modified the
+        # passive defense priority map
         self.dynamic_update_defences(game_state)
-        if self.active_move == 'attack':
-            # Do special update of defense priorities
-            self.attack.compute_attack_type(game_state)
-            self.attack.update_passive_defense(game_state, self.passive_defense)
 
         # 2. Place passive defenses
         # THERE MUST BE 2 cores if in attack (hard-coded necessity in blockade)
@@ -165,30 +163,6 @@ class AlgoStrategy(gamelib.AlgoCore):
             self.passive_defense.increase_priority_near_location(
                 game_state.game_map, min_health_location, circle_radius, increase_priority_amount
             )
-
-    def stall_with_scramblers(self, game_state):
-        """
-        Send out Scramblers at random locations to defend our base from enemy moving units.
-        Unused (this was part of the starter code)
-        """
-        # We can spawn moving units on our edges so a list of all our edge locations
-        friendly_edges = game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_LEFT) + game_state.game_map.get_edge_locations(game_state.game_map.BOTTOM_RIGHT)
-
-        # Remove locations that are blocked by our own firewalls
-        # since we can't deploy units there.
-        deploy_locations = self.filter_blocked_locations(friendly_edges, game_state)
-
-        # While we have remaining bits to spend lets send out scramblers randomly.
-        while game_state.get_resource(BITS) >= game_state.type_cost(SCRAMBLER)[BITS] and len(deploy_locations) > 0:
-            # Choose a random deploy location.
-            deploy_index = random.randint(0, len(deploy_locations) - 1)
-            deploy_location = deploy_locations[deploy_index]
-
-            game_state.attempt_spawn(SCRAMBLER, deploy_location)
-            """
-            We don't have to remove the location since multiple information
-            units can occupy the same space.
-            """
 
     def emp_line_strategy(self, game_state):
         """
@@ -277,19 +251,8 @@ class AlgoStrategy(gamelib.AlgoCore):
         if self.active_move == 'active_defense':
             self.passive_defense.reset_passive_defense_priority(game_state)
         elif self.active_move == 'attack':
-            # Delete edge filters if active_move is attack
-            # (the filters may or may not be added back in the next round,
-            # depending on whether we attack on that side)
-            # Also temporarily change their priority to 0 so they don't get re-added
-            # ONLY ATTACKING RIGHT RN TODO FIXXXXXXX
-            #left_filter_location = [1, 13]
-            right_filter_location = [25, 13]
-            #game_state.attempt_remove([left_filter_location])
-            game_state.attempt_remove([right_filter_location])
-            # side_filter_priority_overrides = {(tuple(left_filter_location), FILTER, 'spawn'): 0,
-            #                                   (tuple(right_filter_location), FILTER, 'spawn'): 0}
-            side_filter_priority_overrides = {(tuple(right_filter_location), FILTER, 'spawn'): 0}
-            self.passive_defense.set_passive_defense_priority_overrides(side_filter_priority_overrides)
+            self.attack.compute_attack_type(game_state)
+            self.attack.delete_filters(game_state, self.passive_defense)
         else:
             raise ValueError("active_move must be active_defense or attack")
 
