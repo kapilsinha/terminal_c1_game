@@ -61,7 +61,8 @@ class Attack(object):
             if firewall_unit_type == ENCRYPTOR:
                 passive_defense.actual_passive_defense_to_priority[x] = priority + 17
 
-        self.get_attack().update_passive_defense(game_state, passive_defense)
+    def delete_filters(self, game_state, passive_defense):
+        self.get_attack().delete_filters(game_state, passive_defense)
 
     def deploy_units(self, game_state):
         '''
