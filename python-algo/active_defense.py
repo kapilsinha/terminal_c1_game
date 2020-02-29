@@ -50,7 +50,7 @@ class ActiveDefense(object):
         priorities = [[13,0], [14,0], [20,6], [13,0]]
 
         for i in range(num_scramblers):
-            game_state.attempt_spawn(SCRAMBLER, priorities[i], num=num_scramblers)
+            game_state.attempt_spawn(SCRAMBLER, priorities[i], num=1)
 
         # if random.random() < .5:
         #     # Swap em randomly to keep things interestings
@@ -122,7 +122,7 @@ class ActiveDefense(object):
 
 
         for i in range(num_scramblers):
-            game_state.attempt_spawn(SCRAMBLER, priorities[i], num=num_scramblers)
+            game_state.attempt_spawn(SCRAMBLER, priorities[i], num=1)
 
     # def deploy_scramblers_on_right_side(self, game_state, num_scramblers):
     #     '''
