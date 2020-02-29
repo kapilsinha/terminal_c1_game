@@ -117,7 +117,7 @@ class ActiveDefense(object):
             return
 
         priorities = [[5,8], [7,6], [6,7]]
-        self.blockade.cheap_blockade_left(game_state)
+        self.blockade.blockade_left(game_state)
 
 
 
