@@ -140,5 +140,4 @@ class ActiveDefense(object):
         num_scramblers_to_deploy = ceil[opponent_bits / 4]
         = (opponent_bits + 3) // 4
         '''
-        enemy_num_bits = int(game_state.get_resource(BITS, 1))
-        return (enemy_num_bits + 3) // 4
+        return ((enemy_num_bits // 3) + 1) // 2 + 1
