@@ -61,9 +61,21 @@ class PassiveDefense(object):
             # the closer inner wall
             ((9, 5), FILTER, 'spawn'): 27,
 
+            #upgrade
+            ((5, 11), FILTER, 'spawn'): 27,
+            ((6, 10), FILTER, 'spawn'): 27,
+            ((7, 9), FILTER, 'spawn'): 27,
+            ((8, 8), FILTER, 'spawn'): 27,
+            ((9, 7), FILTER, 'spawn'): 27,
+            ((10, 6), FILTER, 'spawn'): 27,
+            ((11, 5), FILTER, 'spawn'): 27,
+            ((12, 5), FILTER, 'spawn'): 27,
+
             ((3, 12), DESTRUCTOR, 'upgrade'): 26,
             ((12, 4), DESTRUCTOR, 'upgrade'): 25
+            
         }
+
 
 
         right_side_base_passive_defense_to_priority = {
@@ -91,25 +103,30 @@ class PassiveDefense(object):
 
 
             ((24, 12), DESTRUCTOR, 'spawn'): 31,
+            ((24, 12), DESTRUCTOR, 'upgrade'): 30.5,
+
             ((15, 4), DESTRUCTOR, 'spawn'): 30,
             ((15, 5), FILTER, 'spawn'): 29,
-
-
-            ((24, 12), DESTRUCTOR, 'upgrade'): 28.5,
 
     
             ((22, 11), FILTER, 'upgrade'): 28,
             ((21, 10), FILTER, 'upgrade'): 27,
             ((20, 9), FILTER, 'upgrade'): 26,
+            ((19, 8), FILTER, 'upgrade'): 26,
+            ((20, 9), FILTER, 'upgrade'): 26,
+            ((19, 8), FILTER, 'upgrade'): 26,
+            ((18, 7), FILTER, 'upgrade'): 26,
+            ((17, 6), FILTER, 'upgrade'): 26,
+            ((16, 5), FILTER, 'upgrade'): 26,
+            ((15, 5), FILTER, 'upgrade'): 26,
 
-            
-            ((15, 4), DESTRUCTOR, 'upgrade'): 24,
-            
 
-            ((23, 11), ENCRYPTOR, 'spawn'): 23,
 
-            ((12, 6), DESTRUCTOR, 'spawn'): 22.7,
-            ((15, 6), DESTRUCTOR, 'spawn'): 22.3,
+            ((15, 4), DESTRUCTOR, 'upgrade'): 25,
+            ((23, 11), ENCRYPTOR, 'spawn'): 24,
+
+            ((12, 6), DESTRUCTOR, 'spawn'): 23,
+            ((15, 6), DESTRUCTOR, 'spawn'): 23,
 
             ((23, 11), ENCRYPTOR, 'upgrade'): 22,
             ((22, 10), ENCRYPTOR, 'spawn'): 21,
@@ -120,14 +137,6 @@ class PassiveDefense(object):
             ((12, 6), DESTRUCTOR, 'upgrade'): 17,
             ((15, 6), DESTRUCTOR, 'upgrade'): 16,
         }
-
-        # right_side_base_passive_defense_to_priority = {
-        #     ((27 - x, y), firewall_type, action): priority \
-        #     for (((x, y), firewall_type, action), priority) \
-        #     in left_side_base_passive_defense_to_priority.items()
-        # }
-
-
 
         # This is the constant, base priority map. NEVER CHANGE IT!
         # It will be slightly modified when placing firewall units
