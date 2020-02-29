@@ -91,7 +91,7 @@ class PassiveDefense(object):
 
 
             ((24, 12), DESTRUCTOR, 'spawn'): 31,
-            ((26, 12), DESTRUCTOR, 'spawn'): 30.5
+            ((26, 12), DESTRUCTOR, 'spawn'): 30.5,
             ((15, 4), DESTRUCTOR, 'spawn'): 30,
             ((15, 5), FILTER, 'spawn'): 29,
 
@@ -100,9 +100,9 @@ class PassiveDefense(object):
             ((20, 9), FILTER, 'upgrade'): 26,
 
             ((24, 12), DESTRUCTOR, 'upgrade'): 25,
-            ((26, 12), DESTRUCTOR, 'upgrade'): 24.5
+            ((26, 12), DESTRUCTOR, 'upgrade'): 24.5,
             ((15, 4), DESTRUCTOR, 'upgrade'): 24,
-            
+
 
             ((23, 11), ENCRYPTOR, 'spawn'): 23,
             ((23, 11), ENCRYPTOR, 'upgrade'): 22,

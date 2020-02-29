@@ -47,7 +47,7 @@ class RightAttack(object):
             self.ping_attack(game_state)
         else:
             # Do EMP attack
-            if random.random() < .5:
+            if random.random() < .85:
                 self.emp_attack_for_damage(game_state)
             else:
                 self.emp_attack_for_points(game_state)
@@ -69,11 +69,11 @@ class RightAttack(object):
         Deploys EMPs on the left side but force them to go left purely to do
         damage. Also send a few scramblers
         '''
-        self.blockade.blockade_right(game_state)
+        self.blockade.blockade_center(game_state)
         num_scramblers_to_deploy = 1
         num_emps_to_deploy = (int(game_state.get_resource(BITS)) - num_scramblers_to_deploy) // 3
         game_state.attempt_spawn(EMP, [14, 0], num_emps_to_deploy)
-        game_state.attempt_spawn(SCRAMBLER, [25, 13], num_scramblers)
+        game_state.attempt_spawn(SCRAMBLER, [25, 13], num_scramblers_to_deploy)
 
     def emp_attack_for_points(self, game_state):
         '''

@@ -82,8 +82,8 @@ class ActiveDefense(object):
                 = num_scramblers_to_deploy_on_right, num_scramblers_to_deploy_on_left
 
         self.basic_scrambler_deploy_strategy(game_state, num_scramblers_to_deploy_on_center)
-        self.deploy_scramblers_on_left_side(game_state, num_scramblers_to_deploy_on_left)
-        self.deploy_scramblers_on_right_side(game_state, num_scramblers_to_deploy_on_right)
+        #self.deploy_scramblers_on_left_side(game_state, num_scramblers_to_deploy_on_left)
+        #self.deploy_scramblers_on_right_side(game_state, num_scramblers_to_deploy_on_right)
 
     def deploy_scramblers_on_left_side(self, game_state, num_scramblers):
         '''
@@ -112,7 +112,7 @@ class ActiveDefense(object):
         priorities = [[5,8], [7,6], [6,7]]
         self.blockade.cheap_blockade_left(game_state)
 
-    
+
 
         for i in range(num_scramblers):
             game_state.attempt_spawn(SCRAMBLER, priorities[i], num=num_scramblers)

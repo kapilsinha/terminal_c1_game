@@ -286,8 +286,9 @@ class AlgoStrategy(gamelib.AlgoCore):
             right_filter_location = [25, 13]
             #game_state.attempt_remove([left_filter_location])
             game_state.attempt_remove([right_filter_location])
-            side_filter_priority_overrides = {(tuple(left_filter_location), FILTER, 'spawn'): 0,
-                                              (tuple(right_filter_location), FILTER, 'spawn'): 0}
+            # side_filter_priority_overrides = {(tuple(left_filter_location), FILTER, 'spawn'): 0,
+            #                                   (tuple(right_filter_location), FILTER, 'spawn'): 0}
+            side_filter_priority_overrides = {(tuple(right_filter_location), FILTER, 'spawn'): 0}
             self.passive_defense.set_passive_defense_priority_overrides(side_filter_priority_overrides)
         else:
             raise ValueError("active_move must be active_defense or attack")

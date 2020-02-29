@@ -29,8 +29,8 @@ class Blockade(object):
         CORES = 0
 
         self.center_locations = [[13, 6], [14, 6]]
-        self.left_locations = [[11, 3], [12, 4]]
-        self.right_locations = [[15, 4], [16, 3]]
+        self.left_locations = [[9, 5]]
+        self.right_locations = [[18, 5]]
 
     def blockade_center(self, game_state):
         blockade_locations = self.center_locations
