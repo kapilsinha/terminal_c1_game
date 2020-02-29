@@ -29,7 +29,7 @@ class Blockade(object):
         CORES = 0
 
         self.center_locations = [[13, 6], [14, 6]]
-        self.left_locations = [[9, 5]]
+        self.left_locations = [[9, 5], [2,11] ]
         self.right_locations = [[18, 5]]
 
     def blockade_center(self, game_state):
@@ -40,7 +40,6 @@ class Blockade(object):
     def blockade_left(self, game_state):
         blockade_locations = self.left_locations
         game_state.attempt_spawn(FILTER, blockade_locations)
-        game_state.attempt_remove(blockade_locations)
 
     def cheap_blockade_left(self, game_state):
         # Cheaper blockade left - gives us less space to deploy units on the left
