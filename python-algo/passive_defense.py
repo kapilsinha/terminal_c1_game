@@ -52,7 +52,7 @@ class PassiveDefense(object):
             ((3, 12), DESTRUCTOR, 'spawn'): 31,
             ((12, 4), DESTRUCTOR, 'spawn'): 30,
             ((12, 5), FILTER, 'spawn'): 29,
-            ((5,10), ENCRYPTOR, 'spawn'): 28.5,
+            ((5, 10), ENCRYPTOR, 'spawn'): 28.5,
 
 
             # makes up an inner wall with the destructors
@@ -62,14 +62,14 @@ class PassiveDefense(object):
             ((9, 5), FILTER, 'spawn'): 27,
 
             #upgrade
-            ((5, 11), FILTER, 'spawn'): 27,
-            ((6, 10), FILTER, 'spawn'): 27,
-            ((7, 9), FILTER, 'spawn'): 27,
-            ((8, 8), FILTER, 'spawn'): 27,
-            ((9, 7), FILTER, 'spawn'): 27,
-            ((10, 6), FILTER, 'spawn'): 27,
-            ((11, 5), FILTER, 'spawn'): 27,
-            ((12, 5), FILTER, 'spawn'): 27,
+            ((5, 11), FILTER, 'upgrade'): 27,
+            ((6, 10), FILTER, 'upgrade'): 27,
+            ((7, 9), FILTER, 'upgrade'): 27,
+            ((8, 8), FILTER, 'upgrade'): 27,
+            ((9, 7), FILTER, 'upgrade'): 27,
+            ((10, 6), FILTER, 'upgrade'): 27,
+            ((11, 5), FILTER, 'upgrade'): 27,
+            ((12, 5), FILTER, 'upgrade'): 27,
 
             ((3, 12), DESTRUCTOR, 'upgrade'): 26,
             ((12, 4), DESTRUCTOR, 'upgrade'): 25
