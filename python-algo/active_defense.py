@@ -81,7 +81,7 @@ class ActiveDefense(object):
         num_scramblers_to_deploy_on_side = num_scramblers // 2
         num_scramblers_to_deploy_on_center = num_scramblers - num_scramblers_to_deploy_on_side
 
-        num_scramblers_to_deploy_on_left = num_scramblers_to_deploy_on_side 
+        num_scramblers_to_deploy_on_left = num_scramblers_to_deploy_on_side
         # num_scramblers_to_deploy_on_right = num_scramblers_to_deploy_on_side - num_scramblers_to_deploy_on_left
         # if random.random() < .5:
         #     num_scramblers_to_deploy_on_left, num_scramblers_to_deploy_on_right \
@@ -137,7 +137,7 @@ class ActiveDefense(object):
 
     def num_scramblers_to_deploy(self, game_state):
         '''
-        num_scramblers_to_deploy = ceil[opponent_bits / 4]
-        = (opponent_bits + 3) // 4
+        num_scramblers_to_deploy = shit...
         '''
+        enemy_num_bits = int(game_state.get_resource(BITS, 1))
         return ((enemy_num_bits // 3) + 1) // 2 + 1
