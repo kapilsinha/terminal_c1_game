@@ -56,7 +56,7 @@ class PassiveDefense(object):
 
             # makes up an inner wall with the destructors
             ((2, 11), FILTER, 'spawn'): 28,
-        
+
             # the closer inner wall
             ((11, 4), FILTER, 'spawn'): 27,
             ((10, 3), FILTER, 'spawn'): 26,
@@ -173,10 +173,11 @@ class PassiveDefense(object):
                 # build back our filters, we left it out because we limited ourselves.
                 # And that made a big difference in points (since it leaves a gap in our
                 # defense and the opponent units will target that now)
-                minimum_priority_to_fulfill = self.actual_passive_defense_to_priority[((10, 6), FILTER, 'spawn')]
-                cur_priority = self.actual_passive_defense_to_priority[(location, firewall_unit_type, action)]
-                if cur_priority < minimum_priority_to_fulfill:
-                    break
+                break
+                # minimum_priority_to_fulfill = self.actual_passive_defense_to_priority[((10, 6), FILTER, 'spawn')]
+                # cur_priority = self.actual_passive_defense_to_priority[(location, firewall_unit_type, action)]
+                # if cur_priority < minimum_priority_to_fulfill:
+                #     break
                 # Otherwise continue and violate our num_cores_to_leave!!
                 # Note that this can cause big issues esp. if we are attacking
                 # but those issues are likely worse if we don't patch our filters
