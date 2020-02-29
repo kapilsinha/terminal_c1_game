@@ -265,8 +265,8 @@ class AlgoStrategy(gamelib.AlgoCore):
         Set relevant variables based on whatever active move is chosen
         '''
         num_bits_in_next_round = game_state.project_future_bits()
-        if num_bits_in_next_round > random.randint(
-            11 + game_state.turn_number // 10, 16 + game_state.turn_number // 10):
+        #if num_bits_in_next_round > random.randint(11 + game_state.turn_number // 10, 16 + game_state.turn_number // 10):
+        if num_bits_in_next_round >= 13: # temporary hard code
             self.active_move = 'attack'
         else:
             self.active_move = 'active_defense'
@@ -281,9 +281,11 @@ class AlgoStrategy(gamelib.AlgoCore):
             # (the filters may or may not be added back in the next round,
             # depending on whether we attack on that side)
             # Also temporarily change their priority to 0 so they don't get re-added
-            left_filter_location = [1, 13]
-            right_filter_location = [26, 13]
-            game_state.attempt_remove([left_filter_location, right_filter_location])
+            # ONLY ATTACKING RIGHT RN TODO FIXXXXXXX
+            #left_filter_location = [1, 13]
+            right_filter_location = [25, 13]
+            #game_state.attempt_remove([left_filter_location])
+            game_state.attempt_remove([right_filter_location])
             side_filter_priority_overrides = {(tuple(left_filter_location), FILTER, 'spawn'): 0,
                                               (tuple(right_filter_location), FILTER, 'spawn'): 0}
             self.passive_defense.set_passive_defense_priority_overrides(side_filter_priority_overrides)

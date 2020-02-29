@@ -112,14 +112,6 @@ class PassiveDefense(object):
             ((21, 9), ENCRYPTOR, 'upgrade'): 18
         }
 
-        # right_side_base_passive_defense_to_priority = {
-        #     ((27 - x, y), firewall_type, action): priority \
-        #     for (((x, y), firewall_type, action), priority) \
-        #     in left_side_base_passive_defense_to_priority.items()
-        # }
-
-
-
         # This is the constant, base priority map. NEVER CHANGE IT!
         # It will be slightly modified when placing firewall units
         # The modified verseion is self.actual_passive_defense_to_priority
