@@ -143,4 +143,4 @@ class ActiveDefense(object):
         num_scramblers_to_deploy = shit...
         '''
         enemy_num_bits = int(game_state.get_resource(BITS, 1))
-        return ((enemy_num_bits // 3) + 1) // 2 
+        return ((enemy_num_bits // 3) + 1) // 2 + 1
