@@ -239,8 +239,9 @@ class AlgoStrategy(gamelib.AlgoCore):
         Set relevant variables based on whatever active move is chosen
         '''
         num_bits_in_next_round = game_state.project_future_bits()
-        #if num_bits_in_next_round > random.randint(11 + game_state.turn_number // 10, 16 + game_state.turn_number // 10):
-        if num_bits_in_next_round >= 13: # temporary hard code
+        if num_bits_in_next_round >= 13 \
+            or self.estimate_num_hits_by_destructors(game_state, [13, 0]) < num_bits_in_next_round \
+            or self.estimate_num_hits_by_destructors(game_state, [14, 0]) < num_bits_in_next_round:
             self.active_move = 'attack'
         else:
             self.active_move = 'active_defense'
@@ -258,6 +259,18 @@ class AlgoStrategy(gamelib.AlgoCore):
 
         # Clear out previous turn details
         self.previous_turn_scored_on_locations = []
+
+    def estimate_num_hits_by_destructors(self, game_state, location):
+        path = game_state.find_path_to_edge(location)
+        if path is None:
+            gamelib.debug_write("[attack.py] Attempted to find path to edge from a blocked position." \
+            "[13, 0] and [14, 0] should never contain stationary units")
+            return -1 # we will assume this never happens. If so, we accept we're screwed
+        num_hits = 0
+        for path_location in path:
+            # Get number of enemy destructors that can attack the final location
+            num_hits += len(game_state.get_attackers(path_location, 0))
+        return num_hits
 
 if __name__ == "__main__":
     algo = AlgoStrategy()
