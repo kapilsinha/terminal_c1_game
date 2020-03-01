@@ -80,20 +80,19 @@ class ActiveDefense(object):
         elif num_scramblers < 5:
             self.basic_scrambler_deploy_strategy(game_state, num_scramblers - 1)
             self.deploy_scramblers_on_left_side(game_state, 1)
+        else:
+            num_scramblers_to_deploy_on_side = num_scramblers // 2
+            num_scramblers_to_deploy_on_center = num_scramblers - num_scramblers_to_deploy_on_side
 
+            num_scramblers_to_deploy_on_left = num_scramblers_to_deploy_on_side
+            # num_scramblers_to_deploy_on_right = num_scramblers_to_deploy_on_side - num_scramblers_to_deploy_on_left
+            # if random.random() < .5:
+            #     num_scramblers_to_deploy_on_left, num_scramblers_to_deploy_on_right \
+            #         = num_scramblers_to_deploy_on_right, num_scramblers_to_deploy_on_left
 
-        num_scramblers_to_deploy_on_side = num_scramblers // 2
-        num_scramblers_to_deploy_on_center = num_scramblers - num_scramblers_to_deploy_on_side
-
-        num_scramblers_to_deploy_on_left = num_scramblers_to_deploy_on_side
-        # num_scramblers_to_deploy_on_right = num_scramblers_to_deploy_on_side - num_scramblers_to_deploy_on_left
-        # if random.random() < .5:
-        #     num_scramblers_to_deploy_on_left, num_scramblers_to_deploy_on_right \
-        #         = num_scramblers_to_deploy_on_right, num_scramblers_to_deploy_on_left
-
-        self.basic_scrambler_deploy_strategy(game_state, num_scramblers_to_deploy_on_center)
-        self.deploy_scramblers_on_left_side(game_state, num_scramblers_to_deploy_on_left)
-        # self.deploy_scramblers_on_right_side(game_state, num_scramblers_to_deploy_on_right)
+            self.basic_scrambler_deploy_strategy(game_state, num_scramblers_to_deploy_on_center)
+            self.deploy_scramblers_on_left_side(game_state, num_scramblers_to_deploy_on_left)
+            # self.deploy_scramblers_on_right_side(game_state, num_scramblers_to_deploy_on_right)
 
 
     def deploy_scramblers_on_left_side(self, game_state, num_scramblers):
