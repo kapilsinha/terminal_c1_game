@@ -143,7 +143,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         # Also find the firewall that has the lowest health ratio (if it is < 1)
         # and increase the priority in the area
         stationary_unit_location_to_health_ratio = game_state.get_stationary_unit_location_to_health_ratio()
-        health_ratio_threshold = 0.6
+        health_ratio_threshold = 0.3
         for location, health_ratio in stationary_unit_location_to_health_ratio.items():
             if health_ratio < health_ratio_threshold:
                 gamelib.debug_write("Removed stationary unit at location {} due to low health; its health ratio was {}" \
