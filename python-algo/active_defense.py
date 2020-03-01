@@ -77,6 +77,10 @@ class ActiveDefense(object):
         if num_scramblers <= 2:
             self.basic_scrambler_deploy_strategy(game_state, num_scramblers)
             return
+        elif num_scramblers < 5:
+            self.basic_scrambler_deploy_strategy(game_state, num_scramblers - 1)
+            self.deploy_scramblers_on_left_side(game_state, 1)
+
 
         num_scramblers_to_deploy_on_side = num_scramblers // 2
         num_scramblers_to_deploy_on_center = num_scramblers - num_scramblers_to_deploy_on_side
