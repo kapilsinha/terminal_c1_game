@@ -5,6 +5,7 @@ import random
 from center_attack import CenterAttack
 from left_attack import LeftAttack
 from right_attack import RightAttack
+from middle_right_attack import MiddleRightAttack
 import gamelib
 
 
@@ -31,16 +32,22 @@ class Attack(object):
         self.center_attack = CenterAttack(config)
         self.left_attack = LeftAttack(config)
         self.right_attack = RightAttack(config)
+        self.middle_right_attack = MiddleRightAttack(config)
         # Must be 'left', 'right', or 'center' before calling deploy units
         # i.e. you must compute attack type first
         self.attack_type = None
 
     def compute_attack_type(self, game_state):
         # TODO: More complex logic involving paths here
-        self.attack_type = 'right'
-        # opponent_destructor_locations = game_state.get_opponent_stationary_unit_type_to_locations()[DESTRUCTOR]
+        opponent_destructor_locations = game_state.get_opponent_stationary_unit_type_to_locations()[DESTRUCTOR]
+        count_right_destructors = len([loc for loc in opponent_destructor_locations if loc[0] >= 24])
+        if count_right_destructors <= 1:
+            self.attack_type = 'right'
+        elif count_right_destructors == 2:
+            self.attack_type = random.choice(['middle_right', 'right'])
+        else:
+            self.attack_type = 'middle_right'
         # count_left_destructors = len([loc for loc in opponent_destructor_locations if loc[0] <= 4])
-        # count_right_destructors = len([loc for loc in opponent_destructor_locations if loc[0] >= 23])
 
         # if min(count_left_destructors, count_right_destructors) >= 2:
         #     self.attack_type = 'center'
@@ -79,4 +86,6 @@ class Attack(object):
             return self.left_attack
         elif self.attack_type == 'right':
             return self.right_attack
-        raise ValueError(f"Attack type must be 'center', 'left', or 'right'.  Found {self.attack_type}")
+        elif self.attack_type == 'middle_right':
+            return self.middle_right_attack
+        raise ValueError(f"Attack type must be 'center', 'left', 'middle_right', or 'right'.  Found {self.attack_type}")
