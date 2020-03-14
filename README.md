@@ -1,7 +1,7 @@
-# C1GamesStarterKit
+# Team PPPostered AI
 
-Welcome to the C1 Terminal Starter Kit! The repository contains a collection of scripts and 
-language-specific starter algos, to help you start your journey to develop the ultimate algo.
+## Global Leaderboard Position
+![Image description](https://raw.githubusercontent.com/kapilsinha/terminal_c1_game/master/global_leaderboard_position.png)
 
 For more details about competitions and the game itself please check out our
 [main site](https://terminal.c1games.com/rules).
