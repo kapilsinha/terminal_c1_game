@@ -1,7 +1,7 @@
 # Team PPPostered AI
 
 ## Global Leaderboard Position
-![Image description](https://raw.githubusercontent.com/kapilsinha/terminal_c1_game/master/global_leaderboard_position.png)
+<img src="https://raw.githubusercontent.com/kapilsinha/terminal_c1_game/master/global_leaderboard_position.jpg" width="800" />
 
 For more details about competitions and the game itself please check out our
 [main site](https://terminal.c1games.com/rules).
